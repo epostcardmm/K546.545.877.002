@@ -3,866 +3,1549 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Our Special Memories & Love Story</title>
-    
-    <!-- Google Fonts -->
+    <title>Birthday Card Studio & Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Dancing+Script:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Padauk:wght@400;700&display=swap" rel="stylesheet">
-    
-    <!-- FontAwesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,600;1,400&family=Poppins:wght@300;400;500;600;700&family=Dancing+Script:wght@600&family=Cinzel:wght@600&family=Caveat:wght@600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Canvas Confetti -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
     <style>
-        :root {
-            --bg-color: #FAF6F0;
-            --card-bg: rgba(255, 255, 255, 0.75);
-            --primary-pink: #F472B6;
-            --soft-pink: #FBCFE8;
-            --deep-pink: #DB2777;
-            --rose: #FDA4AF;
-            --text-dark: #4A3B43;
-            --text-muted: #8C7A83;
-            --shadow-glass: 0 8px 32px 0 rgba(190, 140, 160, 0.12);
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            scroll-behavior: smooth;
-        }
-
         body {
-            background-color: var(--bg-color);
-            color: var(--text-dark);
-            font-family: 'Plus Jakarta Sans', 'Padauk', sans-serif;
-            overflow-x: hidden;
-            position: relative;
-            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            background: #0f172a;
+            color: #f8fafc;
         }
 
-        /* Floating Background Particles Canvas */
-        #bg-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+        .font-cursive { font-family: 'Great Vibes', cursive; }
+        .font-serif-custom { font-family: 'Playfair Display', serif; }
+        .font-padauk { font-family: 'Padauk', sans-serif; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
+        ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.3); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(245, 158, 11, 0.6); }
+
+        /* --- PRESET PAPER DESIGNS --- */
+        .paper-vintage {
+            background: #f4efd8;
+            background-image: radial-gradient(rgba(0,0,0,0.04) 1px, transparent 0), linear-gradient(to bottom, rgba(0,0,0,0.02) 1px, transparent 1px);
+            background-size: 15px 15px, 100% 24px;
+            color: #292524;
+            border: 1px solid #d6d3d1;
+        }
+        .paper-vintage .title-text { color: #78350f; }
+        .paper-vintage .heading-text { color: #9f1239; }
+
+        .paper-rosegold {
+            background: linear-gradient(135deg, #fff0f5 0%, #ffe4e1 100%);
+            color: #4a2c3a;
+            border: 1px solid #fbcfe8;
+        }
+        .paper-rosegold .title-text { color: #9d174d; }
+        .paper-rosegold .heading-text { color: #be185d; }
+
+        .paper-midnight {
+            background: linear-gradient(145deg, #0f172a, #1e1b4b);
+            color: #f1f5f9;
+            border: 1px solid #3b82f6;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
+        }
+        .paper-midnight .title-text { color: #fbbf24; }
+        .paper-midnight .heading-text { color: #38bdf8; }
+
+        .paper-pink {
+            background: #fdf2f8;
+            background-image: radial-gradient(#f472b6 0.5px, transparent 0.5px);
+            background-size: 12px 12px;
+            color: #831843;
+            border: 2px solid #fbcfe8;
+        }
+        .paper-pink .title-text { color: #db2777; }
+        .paper-pink .heading-text { color: #be185d; }
+
+        .paper-floral {
+            background: #fffdfa;
+            border: 8px solid #fef3c7;
+            outline: 2px dashed #f59e0b;
+            outline-offset: -5px;
+            color: #374151;
+        }
+        .paper-floral .title-text { color: #d97706; }
+        .paper-floral .heading-text { color: #b45309; }
+
+        .paper-golden {
+            background: linear-gradient(135deg, #1c1917, #292524);
+            color: #fef3c7;
+            border: 2px solid #d97706;
+            box-shadow: 0 0 20px rgba(217, 119, 6, 0.3);
+        }
+        .paper-golden .title-text { color: #fbbf24; }
+        .paper-golden .heading-text { color: #fef08a; }
+
+        .paper-notebook {
+            background: #ffffff;
+            background-image: linear-gradient(#e5e7eb 1px, transparent 1px);
+            background-size: 100% 26px;
+            color: #1f2937;
+            border: 1px solid #d1d5db;
+            border-left: 4px solid #ef4444;
+        }
+        .paper-notebook .title-text { color: #1e40af; }
+        .paper-notebook .heading-text { color: #dc2626; }
+
+        .paper-kraft {
+            background: #d7ba89;
+            background-image: radial-gradient(rgba(0,0,0,0.06) 1px, transparent 0);
+            background-size: 8px 8px;
+            color: #3b250f;
+            border: 1px solid #b8955d;
+        }
+        .paper-kraft .title-text { color: #581c87; }
+        .paper-kraft .heading-text { color: #7f1d1d; }
+
+        .paper-glass {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .paper-glass .title-text { color: #fef08a; }
+        .paper-glass .heading-text { color: #f472b6; }
+
+        .paper-lavender {
+            background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
+            color: #3b0764;
+            border: 1px solid #c084fc;
+        }
+        .paper-lavender .title-text { color: #7e22ce; }
+        .paper-lavender .heading-text { color: #a21caf; }
+
+        /* Paperclip style */
+        .paperclip {
+            position: absolute; top: 10px; right: 24px;
+            width: 14px; height: 42px; border: 2px solid #55555d;
+            border-radius: 10px; box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            z-index: 30; pointer-events: none;
+        }
+        .paperclip::after {
+            content: ''; position: absolute; top: 6px; left: 2px;
+            width: 6px; height: 26px; border: 2px solid #55555d; border-radius: 6px;
+        }
+
+        /* Animations for Preview Canvas */
+        @keyframes previewFloatDown {
+            0% { transform: translate(-50%, -100%) rotate(-12deg); opacity: 0; }
+            35% { transform: translate(-35%, 15%) rotate(8deg); opacity: 1; }
+            65% { transform: translate(-60%, 30%) rotate(-6deg); }
+            100% { transform: translate(-50%, 35%) rotate(-2deg); opacity: 1; }
+        }
+
+        @keyframes previewSwaying {
+            0%, 100% { transform: translate(-50%, 35%) rotate(-2deg) scale(1); }
+            50% { transform: translate(-50%, 30%) rotate(2deg) scale(1.03); }
+        }
+
+        .anim-floating-card {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            animation: previewFloatDown 4s cubic-bezier(0.25, 1, 0.5, 1) forwards,
+                       previewSwaying 4s ease-in-out infinite 4s;
+        }
+
+        .pulse-glow {
+            animation: pulseGlowAnim 1.8s infinite;
+        }
+        @keyframes pulseGlowAnim {
+            0%, 100% { opacity: 0.8; transform: scale(0.95); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        .sparkle-particle {
+            position: absolute;
+            background: radial-gradient(circle, #fff 10%, rgba(255,215,0,0.8) 60%, transparent 100%);
+            border-radius: 50%;
             pointer-events: none;
-            z-index: 0;
+            animation: floatUpAnim var(--duration) linear infinite;
         }
-
-        .content-container {
-            position: relative;
-            z-index: 1;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px 16px 80px 16px;
-        }
-
-        /* Glassmorphism Card Style */
-        .glass-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            border-radius: 24px;
-            padding: 28px;
-            margin-bottom: 32px;
-            box-shadow: var(--shadow-glass);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .glass-card:hover {
-            box-shadow: 0 15px 35px 0 rgba(190, 140, 160, 0.2);
-        }
-
-        .section-title {
-            text-align: center;
-            font-family: 'Dancing Script', 'Padauk', cursive;
-            font-size: 2.3rem;
-            color: var(--deep-pink);
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        /* --- PASSCODE ENTRY MODAL --- */
-        #passcode-modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(250, 246, 240, 0.92);
-            backdrop-filter: blur(15px);
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
-        }
-
-        .passcode-box {
-            text-align: center;
-            max-width: 360px;
-            width: 100%;
-        }
-
-        .passcode-title {
-            font-family: 'Dancing Script', cursive;
-            font-size: 2.5rem;
-            color: var(--deep-pink);
-            margin-bottom: 8px;
-        }
-
-        .passcode-input {
-            width: 100%;
-            padding: 14px;
-            border-radius: 16px;
-            border: 2px solid var(--soft-pink);
-            outline: none;
-            text-align: center;
-            font-size: 1.2rem;
-            letter-spacing: 6px;
-            margin: 18px 0;
-            background: white;
-            color: var(--text-dark);
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
-            transition: border-color 0.3s;
-        }
-
-        .passcode-input:focus {
-            border-color: var(--primary-pink);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary-pink), var(--deep-pink));
-            color: white;
-            border: none;
-            padding: 12px 28px;
-            font-size: 1rem;
-            font-weight: 600;
-            border-radius: 50px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(219, 39, 119, 0.3);
-            transition: all 0.3s ease;
-            width: 100%;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(219, 39, 119, 0.4);
-        }
-
-        /* --- HERO SECTION --- */
-        .hero-header {
-            text-align: center;
-            padding: 40px 10px 20px 10px;
-        }
-
-        .hero-header h1 {
-            font-family: 'Dancing Script', 'Padauk', cursive;
-            font-size: 3.5rem;
-            color: var(--deep-pink);
-            line-height: 1.2;
-            margin-bottom: 10px;
-        }
-
-        .hero-header p {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-        }
-
-        /* --- DAY COUNTER SECTION WITH DATE PICKER --- */
-        .counter-container {
-            text-align: center;
-            padding: 20px 10px;
-        }
-
-        .counter-title {
-            font-size: 1.1rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--text-muted);
-            margin-bottom: 15px;
-            font-weight: 600;
-        }
-
-        .date-picker-wrapper {
-            margin-bottom: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .date-picker-label {
-            font-size: 0.95rem;
-            color: var(--text-dark);
-            font-weight: 500;
-        }
-
-        .date-input {
-            padding: 10px 18px;
-            border-radius: 20px;
-            border: 2px solid var(--soft-pink);
-            outline: none;
-            font-family: inherit;
-            font-size: 1rem;
-            color: var(--deep-pink);
-            background: white;
-            box-shadow: 0 4px 12px rgba(244, 114, 182, 0.1);
-            cursor: pointer;
-            transition: border-color 0.3s;
-        }
-
-        .date-input:focus {
-            border-color: var(--deep-pink);
-        }
-
-        .counter-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #FFF0F5, #FCE7F3);
-            border: 2px solid var(--soft-pink);
-            border-radius: 30px;
-            padding: 24px 40px;
-            box-shadow: 0 10px 25px -5px rgba(244, 114, 182, 0.2);
-        }
-
-        .days-number {
-            font-family: 'Caveat', cursive;
-            font-size: 5rem;
-            font-weight: 700;
-            color: var(--deep-pink);
-            line-height: 1;
-            display: block;
-        }
-
-        .days-label {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-top: 5px;
-        }
-
-        /* --- MUSIC PLAYER --- */
-        .music-player {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            background: rgba(255, 255, 255, 0.85);
-            padding: 16px 24px;
-            border-radius: 60px;
-            box-shadow: var(--shadow-glass);
-            border: 1px solid var(--soft-pink);
-            margin-bottom: 32px;
-        }
-
-        .vinyl-container {
-            width: 55px;
-            height: 55px;
-            position: relative;
-            flex-shrink: 0;
-        }
-
-        .vinyl-disc {
-            width: 100%;
-            height: 100%;
-            background: #111;
-            border-radius: 50%;
-            border: 3px solid #333;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            animation: spin 6s linear infinite;
-            animation-play-state: paused;
-        }
-
-        .vinyl-disc.playing {
-            animation-play-state: running;
-        }
-
-        .vinyl-center {
-            width: 20px;
-            height: 20px;
-            background: var(--primary-pink);
-            border-radius: 50%;
-            border: 2px solid white;
-        }
-
-        @keyframes spin {
-            100% { transform: rotate(360deg); }
-        }
-
-        .song-info {
-            flex-grow: 1;
-            overflow: hidden;
-        }
-
-        .song-title {
-            font-weight: 700;
-            font-size: 0.95rem;
-            color: var(--text-dark);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .song-artist {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        .player-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .player-btn {
-            background: none;
-            border: none;
-            color: var(--deep-pink);
-            font-size: 1.2rem;
-            cursor: pointer;
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s;
-        }
-
-        .player-btn:hover {
-            background: var(--soft-pink);
-        }
-
-        .play-main-btn {
-            background: var(--primary-pink);
-            color: white;
-            font-size: 1.1rem;
-        }
-
-        .play-main-btn:hover {
-            background: var(--deep-pink);
-        }
-
-        /* --- POLAROID GALLERY --- */
-        .polaroid-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 24px;
-            margin-top: 10px;
-        }
-
-        .polaroid-card {
-            background: white;
-            padding: 12px 12px 24px 12px;
-            border-radius: 8px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
-            cursor: pointer;
-            perspective: 1000px;
-            height: 280px;
-            position: relative;
-            transition: transform 0.4s ease;
-        }
-
-        .polaroid-card:nth-child(odd) { transform: rotate(-3deg); }
-        .polaroid-card:nth-child(even) { transform: rotate(3deg); }
-
-        .polaroid-card:hover {
-            transform: translateY(-8px) scale(1.02) rotate(0deg) !important;
-            z-index: 5;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.12);
-        }
-
-        .polaroid-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            text-align: center;
-            transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
-            transform-style: preserve-3d;
-        }
-
-        .polaroid-card.flipped .polaroid-inner {
-            transform: rotateY(180deg);
-        }
-
-        .polaroid-front, .polaroid-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
-            border-radius: 4px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .polaroid-front img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 4px;
-        }
-
-        .polaroid-caption {
-            font-family: 'Caveat', cursive;
-            font-size: 1.3rem;
-            color: #555;
-            margin-top: 10px;
-        }
-
-        .polaroid-back {
-            background: #FFF9FA;
-            border: 1px dashed var(--soft-pink);
-            transform: rotateY(180deg);
-            padding: 16px;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .polaroid-back p {
-            font-family: 'Padauk', sans-serif;
-            font-size: 0.95rem;
-            color: var(--text-dark);
-            line-height: 1.6;
-        }
-
-        /* --- YOUTUBE EMBED SECTION --- */
-        .video-wrapper {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-            border-radius: 16px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-        }
-
-        .video-wrapper iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        /* --- TYPEWRITER MESSAGE BOX --- */
-        .typewriter-box {
-            background: #FFF9FA;
-            border-radius: 16px;
-            padding: 24px;
-            border-left: 4px solid var(--primary-pink);
-            min-height: 140px;
-            font-size: 1.05rem;
-            line-height: 1.8;
-            color: #333;
-            font-family: 'Padauk', sans-serif;
-            position: relative;
-        }
-
-        .cursor {
-            display: inline-block;
-            width: 2px;
-            height: 1.2em;
-            background-color: var(--deep-pink);
-            vertical-align: middle;
-            animation: blink 0.8s infinite;
-        }
-
-        @keyframes blink {
-            50% { opacity: 0; }
-        }
-
-        /* --- NO-FRAME TRANSPARENT FLOWER GIF SECTION --- */
-        .flower-section-container {
-            text-align: center;
-            padding: 10px 0;
-        }
-
-        .flower-gif-display {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 10px 0 20px 0;
-        }
-
-        .flower-gif-img {
-            max-width: 280px;
-            width: 100%;
-            height: auto;
-            object-fit: contain;
-            filter: drop-shadow(0px 10px 15px rgba(244, 114, 182, 0.25));
-            animation: floatGently 3s ease-in-out infinite alternate;
-        }
-
-        @keyframes floatGently {
-            0% { transform: translateY(0px) scale(1); }
-            100% { transform: translateY(-10px) scale(1.02); }
-        }
-
-        .flower-message {
-            font-family: 'Dancing Script', 'Padauk', cursive;
-            font-size: 1.6rem;
-            color: var(--deep-pink);
-            margin-top: 10px;
-            line-height: 1.4;
-        }
-
-        /* Responsive Styles */
-        @media (max-width: 600px) {
-            .hero-header h1 { font-size: 2.5rem; }
-            .days-number { font-size: 4rem; }
-            .counter-badge { padding: 18px 28px; }
-            .section-title { font-size: 1.8rem; }
-            .music-player { padding: 12px 18px; }
-            .flower-gif-img { max-width: 220px; }
+        @keyframes floatUpAnim {
+            0% { transform: translateY(100%) scale(0); opacity: 0; }
+            20% { opacity: 0.8; }
+            100% { transform: translateY(-20%) scale(1.2); opacity: 0; }
         }
     </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col bg-slate-950 text-slate-100">
 
-    <!-- Background Animation Canvas -->
-    <canvas id="bg-canvas"></canvas>
+    <!-- Audio Element -->
+    <audio id="liveBgMusic" loop></audio>
 
-    <!-- Passcode Modal Lock -->
-    <div id="passcode-modal">
-        <div class="passcode-box glass-card">
-            <div class="passcode-title">Secret Passcode</div>
-            <p style="color: var(--text-muted); font-size: 0.95rem;">Enter the special date or code to unlock our page ✨</p>
-            <p style="font-size: 0.8rem; color: #999; margin-top: 4px;">(Default Passcode: <b>1234</b>)</p>
-            <input type="password" id="passcode-input" class="passcode-input" placeholder="••••" maxlength="6">
-            <button class="btn-primary" onclick="checkPasscode()">Unlock Memories 💕</button>
-            <div id="passcode-error" style="color: red; font-size: 0.85rem; margin-top: 10px; display: none;">Wrong secret code! Try again.</div>
+    <!-- Header Navigation Bar -->
+    <header class="bg-slate-900/90 border-b border-slate-800 p-4 sticky top-0 z-50 backdrop-blur-md shadow-xl">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <span class="text-3xl">🎁</span>
+                <div>
+                    <h1 class="text-xl font-bold bg-gradient-to-r from-amber-300 via-pink-400 to-purple-400 bg-clip-text text-transparent">
+                        Birthday Wish Card Studio
+                    </h1>
+                    <p class="text-xs text-slate-400">Custom Backgrounds, Borderless Envelope, Corner Stamp & HTML Generator</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3 w-full sm:w-auto flex-wrap">
+                <button onclick="resetAllDefaults()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-lg border border-slate-700 transition">
+                    🔄 Reset Defaults
+                </button>
+                <button onclick="openLinkGeneratorModal()" class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold text-sm px-4 py-2.5 rounded-xl shadow-lg flex items-center justify-center gap-2 transition hover:scale-105">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> 🌐 Auto Deploy & Get Link
+                </button>
+                <button onclick="generateAndExportHTML()" class="flex-1 sm:flex-none bg-gradient-to-r from-amber-500 via-rose-500 to-purple-600 hover:from-amber-600 hover:to-purple-700 text-white font-semibold text-sm px-5 py-2.5 rounded-xl shadow-lg flex items-center justify-center gap-2 transition hover:scale-105">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    Export Standalone HTML
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Studio Layout (Split Screen) -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- CONTROLS PANEL (LEFT) -->
+        <section class="lg:col-span-5 bg-slate-900/80 rounded-2xl border border-slate-800 p-4 sm:p-5 space-y-6 overflow-y-auto max-h-[calc(100vh-100px)]">
+            
+            <!-- Tab Navigation for Controls -->
+            <div class="flex border-b border-slate-800 gap-2 pb-2">
+                <button onclick="switchControlTab('presets')" id="tab-btn-presets" class="flex-1 text-xs font-semibold py-2 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30">🎨 1. Presets & BG</button>
+                <button onclick="switchControlTab('content')" id="tab-btn-content" class="flex-1 text-xs font-semibold py-2 rounded-lg bg-slate-800 text-slate-400 hover:bg-slate-700">✍️ 2. Content</button>
+                <button onclick="switchControlTab('audio')" id="tab-btn-audio" class="flex-1 text-xs font-semibold py-2 rounded-lg bg-slate-800 text-slate-400 hover:bg-slate-700">🎵 3. Music</button>
+            </div>
+
+            <!-- TAB 1: PRESETS & BACKGROUND CUSTOMIZER -->
+            <div id="tab-sec-presets" class="space-y-6">
+                
+                <!-- BACKGROUND CUSTOMIZER (Single vs Gradient) -->
+                <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-3">
+                    <div class="flex justify-between items-center">
+                        <label class="text-xs font-bold text-teal-300 uppercase tracking-wider">🌌 Card Background Color</label>
+                        <div class="flex bg-slate-900 p-0.5 rounded-lg border border-slate-800 text-[11px]">
+                            <button onclick="setBgMode('single')" id="bg-mode-single" class="px-2.5 py-1 rounded-md font-semibold bg-teal-500/20 text-teal-300 transition">Single</button>
+                            <button onclick="setBgMode('gradient')" id="bg-mode-gradient" class="px-2.5 py-1 rounded-md text-slate-400 transition">Gradient</button>
+                        </div>
+                    </div>
+
+                    <!-- Single Color Control -->
+                    <div id="bg-single-box" class="flex items-center gap-3 pt-1">
+                        <input type="color" id="input-bg-single" value="#0f0728" oninput="updateStudioState()" class="w-10 h-8 rounded bg-transparent cursor-pointer border border-slate-700">
+                        <span class="text-xs text-slate-300">Choose Single Color</span>
+                    </div>
+
+                    <!-- Gradient Color Control -->
+                    <div id="bg-gradient-box" class="hidden space-y-3 pt-1">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[11px] text-slate-400 mb-1">Color 1 (Start)</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="color" id="input-bg-grad1" value="#2e1065" oninput="updateStudioState()" class="w-8 h-7 rounded bg-transparent cursor-pointer border border-slate-700">
+                                    <input type="text" id="text-bg-grad1" value="#2e1065" oninput="syncColorText(this, 'input-bg-grad1')" class="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-xs text-slate-200">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-slate-400 mb-1">Color 2 (End)</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="color" id="input-bg-grad2" value="#05020d" oninput="updateStudioState()" class="w-8 h-7 rounded bg-transparent cursor-pointer border border-slate-700">
+                                    <input type="text" id="text-bg-grad2" value="#05020d" oninput="syncColorText(this, 'input-bg-grad2')" class="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-xs text-slate-200">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] text-slate-400 mb-1">Gradient Direction</label>
+                            <select id="input-bg-direction" onchange="updateStudioState()" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-1.5 text-xs text-teal-200 focus:outline-none">
+                                <option value="circle at center">Radial (Center Glow)</option>
+                                <option value="to bottom">Linear (Top to Bottom)</option>
+                                <option value="to right">Linear (Left to Right)</option>
+                                <option value="135deg">Diagonal (135°)</option>
+                            </select>
+                        </div>
+
+                        <!-- Quick Gradient Presets -->
+                        <div>
+                            <span class="block text-[10px] text-slate-400 mb-1.5">Quick Gradients:</span>
+                            <div class="grid grid-cols-4 gap-1.5">
+                                <button onclick="setQuickGradient('#2e1065', '#05020d', 'circle at center')" class="h-6 rounded bg-gradient-to-r from-purple-900 to-slate-950 border border-slate-700 text-[9px] text-slate-300">Midnight</button>
+                                <button onclick="setQuickGradient('#4c0519', '#18181b', 'circle at center')" class="h-6 rounded bg-gradient-to-r from-rose-950 to-zinc-900 border border-slate-700 text-[9px] text-slate-300">Rose Dark</button>
+                                <button onclick="setQuickGradient('#064e3b', '#022c22', 'circle at center')" class="h-6 rounded bg-gradient-to-r from-emerald-900 to-slate-950 border border-slate-700 text-[9px] text-slate-300">Emerald</button>
+                                <button onclick="setQuickGradient('#311042', '#0f172a', '135deg')" class="h-6 rounded bg-gradient-to-r from-indigo-950 to-slate-900 border border-slate-700 text-[9px] text-slate-300">Purple Blue</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 10 BOUQUET PRESETS -->
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="text-xs font-bold text-amber-300 uppercase tracking-wider">🌸 Bouquet Preset (10 Options)</label>
+                        <span id="bouquet-selected-name" class="text-[11px] text-slate-400">Selected: Animated Sparkle</span>
+                    </div>
+                    <div class="grid grid-cols-5 gap-2" id="bouquet-grid"></div>
+                    
+                    <div class="mt-2">
+                        <input type="text" id="custom-bouquet-url" onchange="setCustomBouquet(this.value)" placeholder="Or enter custom Bouquet Image/GIF URL..." class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-amber-200 focus:outline-none focus:border-amber-400">
+                    </div>
+                </div>
+
+                <!-- 10 ENVELOPE / PHOTO PRESETS (Borderless) -->
+                <div class="border-t border-slate-800/80 pt-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="text-xs font-bold text-rose-300 uppercase tracking-wider">✉️ Envelope Cover (Border & Shadow Free)</label>
+                        <span id="envelope-selected-name" class="text-[11px] text-slate-400">Selected: Golden Sparkle</span>
+                    </div>
+                    <div class="grid grid-cols-5 gap-2" id="envelope-grid"></div>
+
+                    <div class="mt-2">
+                        <input type="text" id="custom-envelope-url" onchange="setCustomEnvelope(this.value)" placeholder="Or enter custom Photo/Envelope Image URL..." class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-rose-200 focus:outline-none focus:border-amber-400">
+                    </div>
+                </div>
+
+                <!-- 10 NOTE PAPER DESIGN PRESETS -->
+                <div class="border-t border-slate-800/80 pt-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="text-xs font-bold text-purple-300 uppercase tracking-wider">📜 Paper Card Design (10 Styles)</label>
+                        <span id="paper-selected-name" class="text-[11px] text-slate-400">Selected: Vintage Parchment</span>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-2" id="paper-grid"></div>
+                </div>
+
+            </div>
+
+            <!-- TAB 2: TEXT & CORNER STAMP CONTENT -->
+            <div id="tab-sec-content" class="hidden space-y-4">
+                <h3 class="text-xs font-bold text-amber-300 uppercase tracking-wider border-b border-slate-800 pb-2">✏️ Text & Corner Photo Stamp</h3>
+
+                <!-- Corner Stamp Photo Customizer -->
+                <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-3">
+                    <label class="block text-xs font-bold text-pink-300 uppercase">📌 Bottom-Right Corner Stamp Photo</label>
+                    
+                    <div class="flex items-center gap-3">
+                        <img id="corner-thumb-preview" src="" class="w-12 h-12 object-cover rounded-lg border border-slate-700">
+                        <div class="flex-1 space-y-2">
+                            <input type="text" id="input-corner-url" oninput="updateStudioState()" placeholder="Image URL..." class="w-full bg-slate-900 border border-slate-800 rounded-lg p-1.5 text-xs text-slate-200">
+                            <div>
+                                <label class="inline-block bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] px-3 py-1 rounded cursor-pointer border border-slate-700 transition">
+                                    📁 Upload Photo from Device
+                                    <input type="file" accept="image/*" onchange="handleCornerDeviceUpload(this)" class="hidden">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Font Family</label>
+                    <select id="input-font-family" onchange="updateStudioState()" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-amber-200 focus:outline-none focus:border-amber-400">
+                        <option value="font-serif-custom">Playfair Display (Serif Classic)</option>
+                        <option value="font-cursive">Great Vibes (Cursive Elegant)</option>
+                        <option value="font-padauk">Padauk (Myanmar Supported)</option>
+                        <option value="font-[Poppins]">Poppins (Modern Clean)</option>
+                        <option value="font-['Dancing_Script']">Dancing Script (Handwritten)</option>
+                        <option value="font-['Cinzel']">Cinzel (Luxury Formal)</option>
+                        <option value="font-['Caveat']">Caveat (Cute Casual)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Start Screen Hint Text</label>
+                    <input type="text" id="input-start-hint" oninput="updateStudioState()" value="✨ Click the bouquet ✨" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-slate-100 focus:outline-none focus:border-amber-400">
+                </div>
+
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Card Header Title</label>
+                    <input type="text" id="input-card-title" oninput="updateStudioState()" value="Happy Birthday" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-slate-100 focus:outline-none focus:border-amber-400">
+                </div>
+
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Greeting Headline</label>
+                    <input type="text" id="input-greeting" oninput="updateStudioState()" value="🎂 Happy Birthday, Babe! 🎂" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-slate-100 focus:outline-none focus:border-amber-400">
+                </div>
+
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Main Birthday Wish Body (Supports Burmese or English)</label>
+                    <textarea id="input-main-msg" oninput="updateStudioState()" rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-slate-100 focus:outline-none focus:border-amber-400">Wishing you a day filled with love, joy, and endless laughter. Thank you for being my constant source of happiness! 💖</textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Sub-Message / Wish Note</label>
+                    <input type="text" id="input-sub-msg" oninput="updateStudioState()" value="May all your dreams come true. Take good care of yourself always! ✨" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-slate-100 focus:outline-none focus:border-amber-400">
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Left Sign Footer</label>
+                        <input type="text" id="input-sign-left" oninput="updateStudioState()" value="With All My Love ❤️" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-slate-100 focus:outline-none focus:border-amber-400">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Right Sign Footer</label>
+                        <input type="text" id="input-sign-right" oninput="updateStudioState()" value="✨ Forever Yours ✨" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-slate-100 focus:outline-none focus:border-amber-400">
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: AUDIO SELECTION -->
+            <div id="tab-sec-audio" class="hidden space-y-4">
+                <h3 class="text-xs font-bold text-amber-300 uppercase tracking-wider border-b border-slate-800 pb-2">🎵 Background Music Presets</h3>
+                
+                <!-- Live Preview Audio Controls -->
+                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span id="audio-status-icon" class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                        <span id="audio-status-text" class="text-xs text-slate-300 font-medium">Audio Muted / Paused</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="previewTestAudio(true)" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs px-3 py-1 rounded">▶ Play Test</button>
+                        <button onclick="previewTestAudio(false)" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-3 py-1 rounded">⏹ Stop</button>
+                    </div>
+                </div>
+
+                <div class="space-y-2" id="audio-preset-list"></div>
+
+                <div class="pt-2 border-t border-slate-800">
+                    <label class="block text-xs text-slate-400 mb-1">Custom Audio Direct URL (.mp3 / .m4a)</label>
+                    <input type="text" id="input-custom-audio" onchange="setCustomAudio(this.value)" placeholder="https://example.com/song.mp3" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-amber-200 focus:outline-none focus:border-amber-400">
+                </div>
+            </div>
+
+        </section>
+
+        <!-- LIVE INTERACTIVE CANVAS (RIGHT) -->
+        <section class="lg:col-span-7 flex flex-col bg-slate-900/60 rounded-2xl border border-slate-800 p-4 relative min-h-[550px] overflow-hidden">
+            
+            <!-- Canvas Toolbar -->
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800 z-30">
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Interactive Live Canvas</span>
+                </div>
+                
+                <div class="flex items-center gap-2">
+                    <button onclick="playFullFlowPreview()" class="text-xs bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 shadow-md transition">
+                        ▶ Replay Full Flow
+                    </button>
+                    <button onclick="directOpenCardModal()" class="text-xs bg-purple-600 hover:bg-purple-700 text-white font-medium px-3 py-1.5 rounded-lg transition">
+                        📜 View Paper Card
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dynamic Interactive Preview Container -->
+            <div id="preview-stage" class="flex-1 relative rounded-xl my-2 overflow-hidden flex items-center justify-center" style="background: radial-gradient(circle at center, #2e1065, #0f0728, #05020d);">
+                
+                <!-- Background Sparkles -->
+                <div id="sparkle-stage" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
+
+                <!-- STEP 1: BOUQUET START SCREEN -->
+                <div id="preview-step-start" class="absolute inset-0 z-20 flex flex-col items-center justify-center cursor-pointer transition-all duration-500 p-4 text-center" onclick="proceedToStep2()">
+                    <span class="text-xs uppercase tracking-widest text-amber-400 font-bold mb-2 bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/20">Step 1: Start Screen</span>
+                    <h2 id="prev-start-hint" class="text-amber-200 text-base sm:text-lg font-bold drop-shadow-md mb-4 pulse-glow">✨ Click the bouquet ✨</h2>
+                    <img id="prev-bouquet-img" src="" class="w-44 sm:w-52 h-auto object-contain hover:scale-105 transition-transform duration-300 filter drop-shadow-lg">
+                    <p class="text-[11px] text-slate-400 mt-4">(Clicking this starts background music & opens envelope stage)</p>
+                </div>
+
+                <!-- STEP 2: FLOATING PHOTO / ENVELOPE STAGE (Borderless & Shadowless) -->
+                <div id="preview-step-floating" class="hidden absolute inset-0 z-20 transition-all duration-500">
+                    <div class="absolute top-4 text-center z-10 px-4 w-full">
+                        <span class="text-[10px] uppercase tracking-widest text-purple-300 font-bold bg-purple-500/20 px-2.5 py-0.5 rounded-full border border-purple-400/30">Step 2: Floating Envelope</span>
+                        <h2 class="text-amber-200 text-sm sm:text-base font-bold drop-shadow-md mt-1">✨ Tap The Floating Envelope ✨</h2>
+                    </div>
+
+                    <!-- Floating Card Element (No borders, no shadows) -->
+                    <div id="prev-falling-card" class="anim-floating-card z-30 flex flex-col items-center justify-center cursor-pointer" onclick="proceedToStep3()">
+                        <img id="prev-envelope-img" src="" class="w-36 sm:w-44 h-auto object-contain bg-transparent border-0 outline-0 shadow-none">
+                        <span class="pulse-glow mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400 text-slate-900 font-bold text-xs shadow-lg border border-amber-200">
+                            Click Me ✨
+                        </span>
+                    </div>
+                </div>
+
+                <!-- STEP 3: NOTE PAPER CARD MODAL -->
+                <div id="preview-step-card" class="hidden absolute inset-0 z-40 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-all duration-500">
+                    
+                    <div id="prev-paper-element" class="paper-vintage relative w-full max-w-sm p-6 sm:p-7 rounded-xl shadow-2xl transition-all duration-300 transform scale-100">
+                        <!-- Paperclip -->
+                        <div class="paperclip"></div>
+
+                        <!-- Card Header -->
+                        <div class="text-center mb-4 pt-2">
+                            <span id="prev-card-title" class="text-2xl sm:text-3xl font-serif-custom title-text block">Happy Birthday</span>
+                            <div class="w-16 h-0.5 bg-amber-800/30 mx-auto mt-2"></div>
+                        </div>
+
+                        <!-- Card Message -->
+                        <div class="space-y-3 text-center leading-relaxed my-4">
+                            <p id="prev-greeting" class="text-base sm:text-lg font-bold heading-text">🎂 Happy Birthday, Babe! 🎂</p>
+                            <p id="prev-main-msg" class="text-xs sm:text-sm font-medium px-2">Wishing you a day filled with love, joy, and endless laughter. Thank you for being my constant source of happiness! 💖</p>
+                            <p id="prev-sub-msg" class="text-xs italic pt-1 opacity-90">May all your dreams come true. Take good care of yourself always! ✨</p>
+                        </div>
+
+                        <!-- Card Footer -->
+                        <div class="mt-6 pt-3 border-t border-black/10 flex items-center justify-between text-[11px]">
+                            <span id="prev-sign-left" class="font-cursive text-sm">With All My Love ❤️</span>
+                            <span id="prev-sign-right">✨ Forever Yours ✨</span>
+                        </div>
+
+                        <!-- CORNER STAMP PHOTO (Bottom Right Corner) -->
+                        <div onclick="openCornerFullModal(event)" class="absolute bottom-3 right-3 cursor-pointer group z-20">
+                            <div class="w-11 h-11 p-0.5 bg-white shadow-md rounded border border-slate-300 transform rotate-3 group-hover:rotate-0 transition duration-200">
+                                <img id="prev-corner-stamp" src="" class="w-full h-full object-cover rounded-sm">
+                            </div>
+                        </div>
+
+                        <!-- Close Button -->
+                        <button onclick="closeCardModal()" class="absolute top-2 right-2 bg-rose-600 text-white rounded-full p-1 shadow-md hover:bg-rose-700 transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+
+                    <!-- ENLARGED CORNER PHOTO OVERLAY (Nested inside Step 3 for clean layering) -->
+                    <div id="corner-full-modal" class="hidden absolute inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 cursor-pointer rounded-xl" onclick="closeCornerFullModal()">
+                        <div class="bg-white p-3 rounded-2xl shadow-2xl max-w-xs w-full text-center relative border border-slate-200" onclick="event.stopPropagation()">
+                            <img id="prev-corner-full-img" src="" class="w-full h-auto max-h-72 object-contain rounded-xl">
+                            <p class="text-xs text-slate-700 font-semibold mt-2.5">✨ Corner Memory Stamp ✨</p>
+                            <button onclick="closeCornerFullModal()" class="absolute -top-3 -right-3 bg-rose-600 text-white rounded-full p-1.5 shadow-lg hover:bg-rose-700 transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="text-center text-[11px] text-slate-400 mt-1">
+                Tip: Click "Replay Full Flow" anytime to test the transition from Bouquet ➔ Floating Envelope ➔ Wish Card.
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- GITHUB DEPLOYMENT & LINK GENERATOR MODAL -->
+    <div id="link-generator-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex justify-center items-center p-4 z-50 hidden overflow-y-auto">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-2xl p-6 space-y-4 shadow-2xl text-slate-100 my-auto">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="font-bold text-lg text-emerald-400 flex items-center gap-2">
+                    <i class="fa-solid fa-globe"></i> GitHub Auto Deploy & Live Link Generator
+                </h3>
+                <button onclick="closeLinkGeneratorModal()" class="text-slate-400 hover:text-white text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div class="bg-slate-800/60 p-4 rounded-2xl border border-emerald-500/30 space-y-3">
+                <div class="flex items-center justify-between">
+                    <h4 class="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+                        <i class="fa-brands fa-github text-sm"></i> GitHub သို့ တခါတည်း တင်ပြီး Live Link ထုတ်မည်
+                    </h4>
+                    <span class="text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-800 px-2 py-0.5 rounded-full font-mono">index.html auto deploy</span>
+                </div>
+                <p class="text-xs text-slate-300 leading-relaxed">
+                    စာသားရိုက်ထည့်ရာနေရာတွင် <b>epostcard</b> သို့မဟုတ် <b>mm</b> သို့မဟုတ် <b>epostcardmm</b> ဟု ရိုက်ထည့်၍ လင့်ခ်အလိုအလျောက် ထုတ်ယူနိုင်ပါသည်။
+                </p>
+
+                <div class="space-y-2 pt-1">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div class="space-y-1">
+                            <label class="block text-[11px] text-slate-400">စာရိုက်ထည့်ရန် Box (epostcard / mm):</label>
+                            <input type="text" id="gh-keyword-input" oninput="onKeywordInputChange()" placeholder="စာရိုက်ပါ (e.g. epostcardmm)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-emerald-300 font-bold focus:outline-none focus:border-emerald-500">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="block text-[11px] text-slate-400">Repository Name:</label>
+                            <input type="text" id="gh-repo" placeholder="Repository Name" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-emerald-500" value="birthday-wish-card">
+                        </div>
+                    </div>
+
+                    <!-- Hidden API Token Box -->
+                    <div class="pt-1">
+                        <label class="block text-[11px] text-slate-400 mb-1">API Token Status:</label>
+                        <input type="password" id="gh-token-custom" readonly placeholder="အထက်ပါနေရာတွင် စာရိုက်ပါက Token အလိုအလျောက် တက်လာပါမည်" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-emerald-400 font-mono focus:outline-none">
+                    </div>
+
+                    <div class="flex flex-wrap gap-2 items-center justify-between pt-1">
+                        <button onclick="autoDeployToGitHub()" id="btn-deploy-gh" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> Auto Deploy & Get Link
+                        </button>
+                        <span id="deploy-status" class="text-xs text-amber-400 font-medium"></span>
+                    </div>
+
+                    <!-- Generated Link Result Box -->
+                    <div id="gh-link-container" class="hidden pt-2">
+                        <label class="block text-[11px] font-bold text-emerald-400 mb-1">✨ သင့် Live Web Link ရရှိပါပြီ (GitHub Pages):</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="gh-generated-link" readonly class="flex-1 bg-slate-950 border border-emerald-500/50 rounded-xl px-3 py-2 text-xs font-mono text-emerald-300 focus:outline-none select-all">
+                            <button onclick="copyGitHubLink()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition flex items-center gap-1">
+                                <i class="fa-regular fa-copy"></i> Copy Link
+                            </button>
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-1">Note: GitHub Pages ပထမဆုံးအကြိမ် တည်ဆောက်ချိန် ၁ မိနစ်မှ ၂ မိနစ်ခန့် ကြာမြင့်နိုင်ပါသည်။</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end pt-2">
+                <button onclick="closeLinkGeneratorModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition">
+                    ပိတ်မည်
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- Main Content Container -->
-    <div class="content-container">
+    <!-- JS SCRIPT FOR STUDIO LOGIC AND DATA -->
+    <script>
+        /* --- 10 BOUQUET PRESETS DATA --- */
+        const BOUQUETS = [
+            { id: 'b1', name: 'Animated Sparkle', url: 'https://cdn.pixabay.com/animation/2026/03/15/04/38/04-38-14-772_512.gif' },
+            { id: 'b2', name: 'Romantic Red Roses', url: 'https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=400&q=80' },
+            { id: 'b3', name: 'Pastel Tulip Bouquet', url: 'https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&w=400&q=80' },
+            { id: 'b4', name: 'Bright Sunflowers', url: 'https://images.unsplash.com/photo-1597848212624-a19eb35e2651?auto=format&fit=crop&w=400&q=80' },
+            { id: 'b5', name: 'Lavender Dreams', url: 'https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=400&q=80' },
+            { id: 'b6', name: 'Elegant Pink Peonies', url: 'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?auto=format&fit=crop&w=400&q=80' },
+            { id: 'b7', name: 'White Lilies Luxury', url: 'https://images.unsplash.com/photo-1582794543139-8ac9cb0f7b11?auto=format&fit=crop&w=400&q=80' },
+            { id: 'b8', name: 'Vintage Floral Mix', url: 'https://images.unsplash.com/photo-1508610048659-a06b669e3321?auto=format&fit=crop&w=400&q=80' },
+            { id: 'b9', name: 'Cute Animated Flowers', url: 'https://cdn.pixabay.com/animation/2023/03/20/12/35/12-35-13-180_512.gif' },
+            { id: 'b10', name: 'Golden Celebration Bouquet', url: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=400&q=80' }
+        ];
 
-        <!-- Music Player Floating/Top -->
-        <div class="music-player">
-            <div class="vinyl-container">
-                <div class="vinyl-disc" id="vinyl-disc">
-                    <div class="vinyl-center"></div>
+        /* --- 10 ENVELOPE / PHOTO PRESETS DATA --- */
+        const ENVELOPES = [
+            { id: 'e1', name: 'Golden Sparkle Envelope', url: 'https://user34427.na.imgto.link/public/20260921/1000021860.avif' },
+            { id: 'e2', name: 'Classic Pink Love Envelope', url: 'https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=400&q=80' },
+            { id: 'e3', name: 'Vintage Sealed Letter', url: 'https://images.unsplash.com/photo-1579202673506-ca3ce28943ef?auto=format&fit=crop&w=400&q=80' },
+            { id: 'e4', name: 'Romantic Rose Envelope', url: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=400&q=80' },
+            { id: 'e5', name: 'Cute Heart Letter', url: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=400&q=80' },
+            { id: 'e6', name: 'Luxury Gold Envelope', url: 'https://images.unsplash.com/photo-1512909006721-3d6018887383?auto=format&fit=crop&w=400&q=80' },
+            { id: 'e7', name: 'Birthday Gift Card Cover', url: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=400&q=80' },
+            { id: 'e8', name: 'Floral Envelope Card', url: 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=400&q=80' },
+            { id: 'e9', name: 'Aesthetic Pastel Envelope', url: 'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=400&q=80' },
+            { id: 'e10', name: 'Starry Night Card', url: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=400&q=80' }
+        ];
+
+        /* --- 10 PAPER CARD DESIGN PRESETS --- */
+        const PAPER_DESIGNS = [
+            { id: 'p1', name: 'Vintage Parchment', cssClass: 'paper-vintage' },
+            { id: 'p2', name: 'Rose Gold Soft Paper', cssClass: 'paper-rosegold' },
+            { id: 'p3', name: 'Midnight Dark Elegant', cssClass: 'paper-midnight' },
+            { id: 'p4', name: 'Pastel Pink Love Note', cssClass: 'paper-pink' },
+            { id: 'p5', name: 'Floral Border Paper', cssClass: 'paper-floral' },
+            { id: 'p6', name: 'Golden Luxury Paper', cssClass: 'paper-golden' },
+            { id: 'p7', name: 'Classic Lined Notebook', cssClass: 'paper-notebook' },
+            { id: 'p8', name: 'Cozy Kraft Paper', cssClass: 'paper-kraft' },
+            { id: 'p9', name: 'Aesthetic Glassmorphism', cssClass: 'paper-glass' },
+            { id: 'p10', name: 'Lavender Dream', cssClass: 'paper-lavender' }
+        ];
+
+        /* --- BACKGROUND AUDIO PRESETS DATA --- */
+        const AUDIO_PRESETS = [
+            { name: 'Soft Birthday Piano (Default)', url: 'https://www.image2url.com/r2/default/audio/1789288232634-9a89e91e-e43f-4d68-b101-bf9b607f0f76.m4a' },
+            { name: 'Acoustic Romantic Guitar', url: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=romantic-acoustic-guitar-112349.mp3' },
+            { name: 'Upbeat Happy Birthday Melody', url: 'https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a8d11c.mp3?filename=happy-birthday-10022.mp3' },
+            { name: 'Lofi Sweet Dreams Melodic', url: 'https://cdn.pixabay.com/download/audio/2022/10/14/audio_9939f7e7f1.mp3?filename=sweet-lofi-122899.mp3' },
+            { name: '🚫 No Music / Muted (သီချင်း မပါပါ)', url: '' }
+        ];
+
+        /* STUDIO STATE MANAGEMENT */
+        let state = {
+            bgMode: 'gradient',
+            singleColor: '#0f0728',
+            gradColor1: '#2e1065',
+            gradColor2: '#05020d',
+            gradDirection: 'circle at center',
+            bouquet: BOUQUETS[0].url,
+            bouquetName: BOUQUETS[0].name,
+            envelope: ENVELOPES[0].url,
+            envelopeName: ENVELOPES[0].name,
+            paperClass: PAPER_DESIGNS[0].cssClass,
+            paperName: PAPER_DESIGNS[0].name,
+            cornerStamp: 'https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=300&q=80',
+            audioUrl: AUDIO_PRESETS[0].url,
+            audioName: AUDIO_PRESETS[0].name
+        };
+
+        // Initialize Studio Controls on Load
+        window.onload = function() {
+            renderBouquetGrid();
+            renderEnvelopeGrid();
+            renderPaperGrid();
+            renderAudioList();
+            document.getElementById('input-corner-url').value = state.cornerStamp;
+            document.getElementById('corner-thumb-preview').src = state.cornerStamp;
+            updateStudioState();
+            createSparkles();
+        };
+
+        /* BACKGROUND MODE & COLOR FUNCTIONS */
+        function setBgMode(mode) {
+            state.bgMode = mode;
+            if(mode === 'single') {
+                document.getElementById('bg-mode-single').className = "px-2.5 py-1 rounded-md font-semibold bg-teal-500/20 text-teal-300 transition";
+                document.getElementById('bg-mode-gradient').className = "px-2.5 py-1 rounded-md text-slate-400 transition";
+                document.getElementById('bg-single-box').classList.remove('hidden');
+                document.getElementById('bg-gradient-box').classList.add('hidden');
+            } else {
+                document.getElementById('bg-mode-gradient').className = "px-2.5 py-1 rounded-md font-semibold bg-teal-500/20 text-teal-300 transition";
+                document.getElementById('bg-mode-single').className = "px-2.5 py-1 rounded-md text-slate-400 transition";
+                document.getElementById('bg-gradient-box').classList.remove('hidden');
+                document.getElementById('bg-single-box').classList.add('hidden');
+            }
+            updateStudioState();
+        }
+
+        function syncColorText(inputEl, colorPickerId) {
+            document.getElementById(colorPickerId).value = inputEl.value;
+            updateStudioState();
+        }
+
+        function setQuickGradient(c1, c2, dir) {
+            state.gradColor1 = c1;
+            state.gradColor2 = c2;
+            state.gradDirection = dir;
+            document.getElementById('input-bg-grad1').value = c1;
+            document.getElementById('text-bg-grad1').value = c1;
+            document.getElementById('input-bg-grad2').value = c2;
+            document.getElementById('text-bg-grad2').value = c2;
+            document.getElementById('input-bg-direction').value = dir;
+            setBgMode('gradient');
+        }
+
+        /* RENDER BOUQUET SELECTION GRID */
+        function renderBouquetGrid() {
+            const grid = document.getElementById('bouquet-grid');
+            grid.innerHTML = BOUQUETS.map((b, idx) => `
+                <div onclick="selectBouquet('${b.url}', '${b.name}')" class="cursor-pointer group relative rounded-lg border-2 overflow-hidden transition-all duration-200 ${state.bouquet === b.url ? 'border-amber-400 scale-105 shadow-md' : 'border-slate-800 hover:border-slate-600'}">
+                    <img src="${b.url}" alt="${b.name}" class="w-full h-12 object-cover">
+                    <span class="absolute bottom-0 inset-x-0 bg-black/70 text-[9px] text-center truncate px-1 text-slate-200">${idx+1}</span>
                 </div>
-            </div>
-            <div class="song-info">
-                <div class="song-title" id="song-title">Song Track 1</div>
-                <div class="song-artist">Special Songs For You ❤️</div>
-            </div>
-            <div class="player-controls">
-                <button class="player-btn" onclick="prevSong()" title="Previous Track"><i class="fa-solid fa-backward-step"></i></button>
-                <button class="player-btn play-main-btn" onclick="togglePlay()" id="play-btn" title="Play/Pause"><i class="fa-solid fa-play"></i></button>
-                <button class="player-btn" onclick="nextSong()" title="Next Track"><i class="fa-solid fa-forward-step"></i></button>
-            </div>
-            <!-- Audio Element -->
-            <audio id="audio-player"></audio>
-        </div>
+            `).join('');
+        }
 
-        <!-- Hero Header -->
-        <div class="hero-header">
-            <h1>Our Love & Memory Story</h1>
-            <p>Every single second with you is a precious blessing ✨</p>
-        </div>
+        function selectBouquet(url, name) {
+            state.bouquet = url;
+            state.bouquetName = name;
+            document.getElementById('bouquet-selected-name').innerText = `Selected: ${name}`;
+            document.getElementById('custom-bouquet-url').value = '';
+            renderBouquetGrid();
+            updateStudioState();
+        }
 
-        <!-- Section 1: Day Counter with Date Picker -->
-        <div class="glass-card counter-container">
-            <div class="counter-title"><i class="fa-solid fa-heart" style="color: var(--deep-pink);"></i> We've Been Together For <i class="fa-solid fa-heart" style="color: var(--deep-pink);"></i></div>
+        function setCustomBouquet(url) {
+            if(!url) return;
+            state.bouquet = url;
+            state.bouquetName = 'Custom Image URL';
+            document.getElementById('bouquet-selected-name').innerText = `Selected: Custom URL`;
+            updateStudioState();
+        }
+
+        /* RENDER ENVELOPE SELECTION GRID */
+        function renderEnvelopeGrid() {
+            const grid = document.getElementById('envelope-grid');
+            grid.innerHTML = ENVELOPES.map((e, idx) => `
+                <div onclick="selectEnvelope('${e.url}', '${e.name}')" class="cursor-pointer group relative rounded-lg border-2 overflow-hidden transition-all duration-200 ${state.envelope === e.url ? 'border-rose-400 scale-105 shadow-md' : 'border-slate-800 hover:border-slate-600'}">
+                    <img src="${e.url}" alt="${e.name}" class="w-full h-12 object-cover">
+                    <span class="absolute bottom-0 inset-x-0 bg-black/70 text-[9px] text-center truncate px-1 text-slate-200">${idx+1}</span>
+                </div>
+            `).join('');
+        }
+
+        function selectEnvelope(url, name) {
+            state.envelope = url;
+            state.envelopeName = name;
+            document.getElementById('envelope-selected-name').innerText = `Selected: ${name}`;
+            document.getElementById('custom-envelope-url').value = '';
+            renderEnvelopeGrid();
+            updateStudioState();
+        }
+
+        function setCustomEnvelope(url) {
+            if(!url) return;
+            state.envelope = url;
+            state.envelopeName = 'Custom Cover URL';
+            document.getElementById('envelope-selected-name').innerText = `Selected: Custom URL`;
+            updateStudioState();
+        }
+
+        /* RENDER PAPER DESIGN GRID */
+        function renderPaperGrid() {
+            const grid = document.getElementById('paper-grid');
+            grid.innerHTML = PAPER_DESIGNS.map((p, idx) => `
+                <div onclick="selectPaper('${p.cssClass}', '${p.name}')" class="cursor-pointer rounded-lg border-2 p-2 text-center text-[10px] font-semibold transition-all duration-200 ${p.cssClass} ${state.paperClass === p.cssClass ? 'border-amber-400 scale-105 ring-2 ring-amber-400/50' : 'border-slate-700 opacity-80 hover:opacity-100'}">
+                    <div class="truncate">${idx+1}. ${p.name}</div>
+                </div>
+            `).join('');
+        }
+
+        function selectPaper(cssClass, name) {
+            state.paperClass = cssClass;
+            state.paperName = name;
+            document.getElementById('paper-selected-name').innerText = `Selected: ${name}`;
+            renderPaperGrid();
+            updateStudioState();
+        }
+
+        /* RENDER AUDIO PRESET LIST */
+        function renderAudioList() {
+            const list = document.getElementById('audio-preset-list');
+            list.innerHTML = AUDIO_PRESETS.map((a, idx) => `
+                <div onclick="selectAudio('${a.url}', '${a.name}')" class="cursor-pointer flex items-center justify-between p-2.5 rounded-lg border ${state.audioUrl === a.url ? 'bg-amber-500/10 border-amber-500/40 text-amber-200' : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'}">
+                    <span class="text-xs font-medium">${idx+1}. ${a.name}</span>
+                    ${state.audioUrl === a.url ? '<span class="text-xs">✓ Active</span>' : ''}
+                </div>
+            `).join('');
+        }
+
+        function selectAudio(url, name) {
+            state.audioUrl = url;
+            state.audioName = name;
+            document.getElementById('input-custom-audio').value = '';
+            renderAudioList();
+            updateStudioAudioPlayer();
+        }
+
+        function setCustomAudio(url) {
+            if(!url) return;
+            state.audioUrl = url;
+            state.audioName = 'Custom Audio URL';
+            renderAudioList();
+            updateStudioAudioPlayer();
+        }
+
+        function updateStudioAudioPlayer() {
+            const audioEl = document.getElementById('liveBgMusic');
+            if(state.audioUrl) {
+                audioEl.src = state.audioUrl;
+                audioEl.load();
+            } else {
+                audioEl.pause();
+                audioEl.src = '';
+            }
+        }
+
+        function previewTestAudio(isPlaying) {
+            const audioEl = document.getElementById('liveBgMusic');
+            const statusIcon = document.getElementById('audio-status-icon');
+            const statusText = document.getElementById('audio-status-text');
+
+            if(isPlaying && state.audioUrl) {
+                audioEl.src = state.audioUrl;
+                audioEl.play().then(() => {
+                    statusIcon.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse";
+                    statusText.innerText = "Playing Audio Live...";
+                }).catch(e => {
+                    alert("Playback blocked or invalid URL. Tap anywhere on the preview first.");
+                });
+            } else {
+                audioEl.pause();
+                statusIcon.className = "w-2.5 h-2.5 rounded-full bg-rose-500";
+                statusText.innerText = "Audio Muted / Paused";
+            }
+        }
+
+        /* CORNER PHOTO DEVICE UPLOAD */
+        function handleCornerDeviceUpload(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    state.cornerStamp = e.target.result;
+                    document.getElementById('input-corner-url').value = e.target.result;
+                    document.getElementById('corner-thumb-preview').src = e.target.result;
+                    updateStudioState();
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        /* UPDATE LIVE CANVAS STATE */
+        function updateStudioState() {
+            const fontClass = document.getElementById('input-font-family').value;
+            const stage = document.getElementById('preview-stage');
+
+            // Apply Background Styling
+            if(state.bgMode === 'single') {
+                state.singleColor = document.getElementById('input-bg-single').value;
+                stage.style.background = state.singleColor;
+            } else {
+                state.gradColor1 = document.getElementById('input-bg-grad1').value;
+                state.gradColor2 = document.getElementById('input-bg-grad2').value;
+                state.gradDirection = document.getElementById('input-bg-direction').value;
+                if(state.gradDirection.includes('circle')) {
+                    stage.style.background = `radial-gradient(${state.gradDirection}, ${state.gradColor1}, ${state.gradColor2})`;
+                } else {
+                    stage.style.background = `linear-gradient(${state.gradDirection}, ${state.gradColor1}, ${state.gradColor2})`;
+                }
+            }
             
-            <div class="date-picker-wrapper">
-                <label for="anniversary-date" class="date-picker-label">📅 အမှတ်တရနေ့စွဲလေး ရွေးပေးပါနော် -</label>
-                <input type="date" id="anniversary-date" class="date-input" onchange="calculateDays()">
-            </div>
+            // Start Hint & Bouquet
+            document.getElementById('prev-start-hint').innerText = document.getElementById('input-start-hint').value;
+            document.getElementById('prev-start-hint').className = `text-amber-200 text-base sm:text-lg font-bold drop-shadow-md mb-4 pulse-glow ${fontClass}`;
+            document.getElementById('prev-bouquet-img').src = state.bouquet;
 
-            <div class="counter-badge">
-                <span class="days-number" id="days-count">0</span>
-                <span class="days-label">DAYS</span>
-            </div>
+            // Envelope image (Borderless and shadowless)
+            const envImg = document.getElementById('prev-envelope-img');
+            envImg.src = state.envelope;
+            envImg.className = "w-36 sm:w-44 h-auto object-contain bg-transparent border-0 outline-0 shadow-none";
+
+            // Paper element update
+            const paperEl = document.getElementById('prev-paper-element');
+            paperEl.className = `${state.paperClass} relative w-full max-w-sm p-6 sm:p-7 rounded-xl shadow-2xl transition-all duration-300 transform scale-100 ${fontClass}`;
+
+            // Corner Stamp
+            const cornerUrlInput = document.getElementById('input-corner-url').value;
+            if(cornerUrlInput) state.cornerStamp = cornerUrlInput;
+            document.getElementById('prev-corner-stamp').src = state.cornerStamp;
+            document.getElementById('prev-corner-full-img').src = state.cornerStamp;
+            document.getElementById('corner-thumb-preview').src = state.cornerStamp;
+
+            // Text elements inside card
+            document.getElementById('prev-card-title').innerText = document.getElementById('input-card-title').value;
+            document.getElementById('prev-greeting').innerText = document.getElementById('input-greeting').value;
+            document.getElementById('prev-main-msg').innerText = document.getElementById('input-main-msg').value;
+            document.getElementById('prev-sub-msg').innerText = document.getElementById('input-sub-msg').value;
+            document.getElementById('prev-sign-left').innerText = document.getElementById('input-sign-left').value;
+            document.getElementById('prev-sign-right').innerText = document.getElementById('input-sign-right').value;
+        }
+
+        /* PREVIEW STEP TRANSITION FLOWS */
+        function proceedToStep2() {
+            const audioEl = document.getElementById('liveBgMusic');
+            if(state.audioUrl) {
+                audioEl.src = state.audioUrl;
+                audioEl.play().catch(e => console.log("Audio play error", e));
+            }
+            document.getElementById('preview-step-start').classList.add('hidden');
+            document.getElementById('preview-step-floating').classList.remove('hidden');
+        }
+
+        function proceedToStep3() {
+            document.getElementById('preview-step-card').classList.remove('hidden');
+        }
+
+        function closeCardModal() {
+            document.getElementById('preview-step-card').classList.add('hidden');
+            closeCornerFullModal();
+        }
+
+        function directOpenCardModal() {
+            const audioEl = document.getElementById('liveBgMusic');
+            if(state.audioUrl) {
+                audioEl.src = state.audioUrl;
+                audioEl.play().catch(e => {});
+            }
+            document.getElementById('preview-step-start').classList.add('hidden');
+            document.getElementById('preview-step-floating').classList.remove('hidden');
+            document.getElementById('preview-step-card').classList.remove('hidden');
+        }
+
+        function openCornerFullModal(e) {
+            if(e) e.stopPropagation();
+            document.getElementById('corner-full-modal').classList.remove('hidden');
+        }
+
+        function closeCornerFullModal() {
+            document.getElementById('corner-full-modal').classList.add('hidden');
+        }
+
+        function playFullFlowPreview() {
+            closeCornerFullModal();
+            document.getElementById('preview-step-card').classList.add('hidden');
+            document.getElementById('preview-step-floating').classList.add('hidden');
+            document.getElementById('preview-step-start').classList.remove('hidden');
+
+            const cardNode = document.getElementById('prev-falling-card');
+            cardNode.style.animation = 'none';
+            cardNode.offsetHeight;
+            cardNode.style.animation = null;
+        }
+
+        function switchControlTab(tab) {
+            document.getElementById('tab-sec-presets').classList.add('hidden');
+            document.getElementById('tab-sec-content').classList.add('hidden');
+            document.getElementById('tab-sec-audio').classList.add('hidden');
+
+            document.getElementById('tab-btn-presets').className = "flex-1 text-xs font-semibold py-2 rounded-lg bg-slate-800 text-slate-400 hover:bg-slate-700";
+            document.getElementById('tab-btn-content').className = "flex-1 text-xs font-semibold py-2 rounded-lg bg-slate-800 text-slate-400 hover:bg-slate-700";
+            document.getElementById('tab-btn-audio').className = "flex-1 text-xs font-semibold py-2 rounded-lg bg-slate-800 text-slate-400 hover:bg-slate-700";
+
+            if(tab === 'presets') {
+                document.getElementById('tab-sec-presets').classList.remove('hidden');
+                document.getElementById('tab-btn-presets').className = "flex-1 text-xs font-semibold py-2 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30";
+            } else if(tab === 'content') {
+                document.getElementById('tab-sec-content').classList.remove('hidden');
+                document.getElementById('tab-btn-content').className = "flex-1 text-xs font-semibold py-2 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30";
+            } else {
+                document.getElementById('tab-sec-audio').classList.remove('hidden');
+                document.getElementById('tab-btn-audio').className = "flex-1 text-xs font-semibold py-2 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30";
+            }
+        }
+
+        function createSparkles() {
+            const container = document.getElementById('sparkle-stage');
+            if(!container) return;
+            for(let i = 0; i < 20; i++) {
+                const s = document.createElement('div');
+                s.className = 'sparkle-particle';
+                const size = Math.random() * 5 + 2;
+                s.style.width = `${size}px`;
+                s.style.height = `${size}px`;
+                s.style.left = `${Math.random() * 100}%`;
+                s.style.top = `${Math.random() * 100}%`;
+                s.style.setProperty('--duration', `${Math.random() * 5 + 4}s`);
+                container.appendChild(s);
+            }
+        }
+
+        function resetAllDefaults() {
+            selectBouquet(BOUQUETS[0].url, BOUQUETS[0].name);
+            selectEnvelope(ENVELOPES[0].url, ENVELOPES[0].name);
+            selectPaper(PAPER_DESIGNS[0].cssClass, PAPER_DESIGNS[0].name);
+            selectAudio(AUDIO_PRESETS[0].url, AUDIO_PRESETS[0].name);
+            setQuickGradient('#2e1065', '#05020d', 'circle at center');
+            
+            document.getElementById('input-font-family').value = 'font-serif-custom';
+            document.getElementById('input-start-hint').value = '✨ Click the bouquet ✨';
+            document.getElementById('input-card-title').value = 'Happy Birthday';
+            document.getElementById('input-greeting').value = '🎂 Happy Birthday, Babe! 🎂';
+            document.getElementById('input-main-msg').value = 'Wishing you a day filled with love, joy, and endless laughter. Thank you for being my constant source of happiness! 💖';
+            document.getElementById('input-sub-msg').value = 'May all your dreams come true. Take good care of yourself always! ✨';
+            document.getElementById('input-sign-left').value = 'With All My Love ❤️';
+            document.getElementById('input-sign-right').value = '✨ Forever Yours ✨';
+            
+            updateStudioState();
+            playFullFlowPreview();
+        }
+
+        /* --- EXPORT GENERATED STANDALONE HTML SOURCE CODE --- */
+        function getGeneratedHTMLCode() {
+            const fontClass = document.getElementById('input-font-family').value;
+            const startHint = document.getElementById('input-start-hint').value;
+            const cardTitle = document.getElementById('input-card-title').value;
+            const greeting = document.getElementById('input-greeting').value;
+            const mainMsg = document.getElementById('input-main-msg').value;
+            const subMsg = document.getElementById('input-sub-msg').value;
+            const signLeft = document.getElementById('input-sign-left').value;
+            const signRight = document.getElementById('input-sign-right').value;
+
+            // Compute background CSS string for export
+            let exportBgCss = '';
+            if(state.bgMode === 'single') {
+                exportBgCss = `background: ${state.singleColor};`;
+            } else {
+                if(state.gradDirection.includes('circle')) {
+                    exportBgCss = `background: radial-gradient(${state.gradDirection}, ${state.gradColor1}, ${state.gradColor2});`;
+                } else {
+                    exportBgCss = `background: linear-gradient(${state.gradDirection}, ${state.gradColor1}, ${state.gradColor2});`;
+                }
+            }
+
+            return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${cardTitle}</title>
+    <script src="https://cdn.tailwindcss.com"><\/script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,600;1,400&family=Poppins:wght@400;500;600;700&family=Dancing+Script:wght@600&family=Cinzel:wght@600&family=Caveat:wght@600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            ${exportBgCss}
+            overflow: hidden;
+            height: 100vh;
+            touch-action: manipulation;
+        }
+
+        .font-cursive { font-family: 'Great Vibes', cursive; }
+        .font-serif-custom { font-family: 'Playfair Display', serif; }
+        .font-padauk { font-family: 'Padauk', sans-serif; }
+
+        @keyframes floatDownToCenter {
+            0% { transform: translate(-50%, -100vh) rotate(-12deg); opacity: 0; }
+            20% { opacity: 1; }
+            35% { transform: translate(-35%, -15vh) rotate(8deg); }
+            65% { transform: translate(-60%, 10vh) rotate(-6deg); }
+            85% { transform: translate(-45%, 22vh) rotate(4deg); }
+            100% { transform: translate(-50%, 25vh) rotate(-2deg); }
+        }
+
+        @keyframes centerSwaying {
+            0%, 100% { transform: translate(-50%, 25vh) rotate(-2deg) scale(1); }
+            50% { transform: translate(-50%, 21vh) rotate(2deg) scale(1.03); }
+        }
+
+        .free-floating-image {
+            position: absolute;
+            top: 25%;
+            left: 50%;
+            animation: floatDownToCenter 6s cubic-bezier(0.25, 1, 0.5, 1) forwards,
+                       centerSwaying 4s ease-in-out infinite 6s;
+            cursor: pointer;
+            transition: filter 0.3s ease, transform 0.5s ease;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        /* Borderless and shadowless envelope in export */
+        .free-floating-image img {
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+        }
+
+        .free-floating-image:hover img {
+            filter: drop-shadow(0 0 15px rgba(251, 191, 36, 0.7));
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.8; transform: scale(0.95); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        .click-hint { animation: pulseGlow 1.8s infinite; }
+
+        /* --- PRESET PAPER DESIGNS --- */
+        .paper-vintage {
+            background: #f4efd8;
+            background-image: radial-gradient(rgba(0,0,0,0.04) 1px, transparent 0), linear-gradient(to bottom, rgba(0,0,0,0.02) 1px, transparent 1px);
+            background-size: 15px 15px, 100% 24px;
+            color: #292524; border: 1px solid #d6d3d1;
+        }
+        .paper-vintage .title-text { color: #78350f; }
+        .paper-vintage .heading-text { color: #9f1239; }
+
+        .paper-rosegold {
+            background: linear-gradient(135deg, #fff0f5 0%, #ffe4e1 100%);
+            color: #4a2c3a; border: 1px solid #fbcfe8;
+        }
+        .paper-rosegold .title-text { color: #9d174d; }
+        .paper-rosegold .heading-text { color: #be185d; }
+
+        .paper-midnight {
+            background: linear-gradient(145deg, #0f172a, #1e1b4b);
+            color: #f1f5f9; border: 1px solid #3b82f6;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
+        }
+        .paper-midnight .title-text { color: #fbbf24; }
+        .paper-midnight .heading-text { color: #38bdf8; }
+
+        .paper-pink {
+            background: #fdf2f8;
+            background-image: radial-gradient(#f472b6 0.5px, transparent 0.5px);
+            background-size: 12px 12px; color: #831843; border: 2px solid #fbcfe8;
+        }
+        .paper-pink .title-text { color: #db2777; }
+        .paper-pink .heading-text { color: #be185d; }
+
+        .paper-floral {
+            background: #fffdfa; border: 8px solid #fef3c7;
+            outline: 2px dashed #f59e0b; outline-offset: -5px; color: #374151;
+        }
+        .paper-floral .title-text { color: #d97706; }
+        .paper-floral .heading-text { color: #b45309; }
+
+        .paper-golden {
+            background: linear-gradient(135deg, #1c1917, #292524);
+            color: #fef3c7; border: 2px solid #d97706;
+            box-shadow: 0 0 20px rgba(217, 119, 6, 0.3);
+        }
+        .paper-golden .title-text { color: #fbbf24; }
+        .paper-golden .heading-text { color: #fef08a; }
+
+        .paper-notebook {
+            background: #ffffff;
+            background-image: linear-gradient(#e5e7eb 1px, transparent 1px);
+            background-size: 100% 26px; color: #1f2937; border: 1px solid #d1d5db;
+            border-left: 4px solid #ef4444;
+        }
+        .paper-notebook .title-text { color: #1e40af; }
+        .paper-notebook .heading-text { color: #dc2626; }
+
+        .paper-kraft {
+            background: #d7ba89;
+            background-image: radial-gradient(rgba(0,0,0,0.06) 1px, transparent 0);
+            background-size: 8px 8px; color: #3b250f; border: 1px solid #b8955d;
+        }
+        .paper-kraft .title-text { color: #581c87; }
+        .paper-kraft .heading-text { color: #7f1d1d; }
+
+        .paper-glass {
+            background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .paper-glass .title-text { color: #fef08a; }
+        .paper-glass .heading-text { color: #f472b6; }
+
+        .paper-lavender {
+            background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
+            color: #3b0764; border: 1px solid #c084fc;
+        }
+        .paper-lavender .title-text { color: #7e22ce; }
+        .paper-lavender .heading-text { color: #a21caf; }
+
+        .paperclip {
+            position: absolute; top: 10px; right: 24px;
+            width: 14px; height: 42px; border: 2px solid #55555d;
+            border-radius: 10px; box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            z-index: 30; pointer-events: none;
+        }
+        .paperclip::after {
+            content: ''; position: absolute; top: 6px; left: 2px;
+            width: 6px; height: 26px; border: 2px solid #55555d; border-radius: 6px;
+        }
+
+        .sparkle {
+            position: absolute;
+            background: radial-gradient(circle, #fff 10%, rgba(255,215,0,0.8) 60%, transparent 100%);
+            border-radius: 50%; pointer-events: none;
+            animation: floatUp var(--duration) linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(105vh) scale(0) rotate(0deg); opacity: 0; }
+            20% { opacity: 0.8; }
+            80% { opacity: 0.8; }
+            100% { transform: translateY(-10vh) scale(1.2) rotate(360deg); opacity: 0; }
+        }
+
+        .blurred-content { filter: blur(6px); pointer-events: none; transition: filter 0.5s ease; }
+    </style>
+</head>
+<body class="relative flex items-center justify-center min-h-screen select-none overflow-hidden ${fontClass}">
+
+    <audio id="bgMusic" loop src="${state.audioUrl}"></audio>
+
+    <!-- Start Screen -->
+    <div id="startScreen" class="absolute inset-0 z-40 flex flex-col items-center justify-center cursor-pointer transition-opacity duration-700" onclick="startExperience()">
+        <h1 class="text-amber-200 text-lg md:text-xl font-bold tracking-wide drop-shadow-md mb-6 click-hint text-center px-4">
+            ${startHint}
+        </h1>
+        <img src="${state.bouquet}" alt="Bouquet" class="w-48 sm:w-56 h-auto object-contain hover:scale-105 transition-transform duration-300">
+    </div>
+
+    <!-- Main Floating Screen -->
+    <div id="mainContent" class="hidden w-full h-full transition-all duration-500">
+        <div id="sparkle-container" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
+        <div class="absolute w-80 h-80 bg-pink-600/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute w-72 h-72 bg-amber-500/20 rounded-full blur-3xl pointer-events-none -top-10 -left-10"></div>
+
+        <div class="absolute top-8 text-center z-10 px-4 w-full">
+            <h1 class="text-amber-200 text-base md:text-lg font-bold tracking-wide drop-shadow-md">✨ Tap The Envelope ✨</h1>
+            <p class="text-xs text-purple-300/80 mt-1">Tap the floating envelope to open birthday wish</p>
         </div>
 
-        <!-- Section 2: Polaroid Photo Gallery -->
-        <div class="glass-card">
-            <div class="section-title"><i class="fa-solid fa-camera-retro"></i> Our Sweet Moments</div>
-            <p style="text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
-                (Click or tap on any picture to flip and read the secret note)
-            </p>
-            <div class="polaroid-grid">
-                <!-- Card 1 -->
-                <div class="polaroid-card" onclick="flipCard(this)">
-                    <div class="polaroid-inner">
-                        <div class="polaroid-front">
-                            <img src="https://i.pinimg.com/736x/77/52/4a/77524a09b7b8a7d09b54ab18c52d6816.jpg" alt="Memory 1">
-                            <div class="polaroid-caption">Memory ✨</div>
-                        </div>
-                        <div class="polaroid-back">
-                            <p>ဒီနေ့လည်းအများကြီး ချစ်တယ်နော်.. 💭</p>
-                        </div>
-                    </div>
+        <div id="fallingCard" class="free-floating-image z-20 flex flex-col items-center justify-center" onclick="openWishCard()">
+            <img src="${state.envelope}" alt="Birthday Special" class="w-40 sm:w-48 h-auto object-contain pointer-events-auto bg-transparent border-0 outline-0 shadow-none">
+            <span class="click-hint mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/90 text-slate-900 font-bold text-xs tracking-wider shadow-lg border border-amber-200">
+                <svg class="w-3.5 h-3.5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
+                Click Me ✨
+            </span>
+        </div>
+    </div>
+
+    <!-- Note Paper Card Modal -->
+    <div id="wishModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-[2px] opacity-0 pointer-events-none transition-opacity duration-500" onclick="closeWishCardOnBg(event)">
+        
+        <div class="${state.paperClass} relative w-full max-w-md p-6 sm:p-8 rounded-xl z-10 shadow-2xl transform scale-90 transition-transform duration-500" id="modalCard">
+            <div class="paperclip"></div>
+
+            <div class="text-center mb-4 pt-3">
+                <span class="text-3xl sm:text-4xl title-text block">${cardTitle}</span>
+                <div class="w-20 h-0.5 bg-amber-800/20 mx-auto mt-2"></div>
+            </div>
+
+            <div class="space-y-3 text-center leading-relaxed my-4">
+                <p class="text-lg sm:text-xl font-bold heading-text drop-shadow-sm">${greeting}</p>
+                <p class="text-sm sm:text-base font-medium px-2 opacity-95">${mainMsg}</p>
+                <p class="text-xs sm:text-sm italic pt-1 opacity-80">${subMsg}</p>
+            </div>
+
+            <div class="mt-6 pt-3 border-t border-black/10 flex items-center justify-between text-xs">
+                <span class="font-cursive text-base">${signLeft}</span>
+                <span>${signRight}</span>
+            </div>
+
+            <!-- Corner Stamp in Export Modal -->
+            <div onclick="openCornerFullModal(event)" class="absolute bottom-3 right-3 cursor-pointer group z-30">
+                <div class="w-11 h-11 p-0.5 bg-white shadow-md rounded border border-slate-300 transform rotate-3 group-hover:rotate-0 transition duration-200">
+                    <img src="${state.cornerStamp}" class="w-full h-full object-cover rounded-sm">
                 </div>
-
-                <!-- Card 2 -->
-                <div class="polaroid-card" onclick="flipCard(this)">
-                    <div class="polaroid-inner">
-                        <div class="polaroid-front">
-                            <img src="https://i.pinimg.com/1200x/86/2d/f2/862df26ffb3eadbcc804419ef398cfcb.jpg" alt="Memory 2">
-                            <div class="polaroid-caption">Sweet Smile 😊</div>
-                        </div>
-                        <div class="polaroid-back">
-                            <p>နင်ပြုံးလိုက်ရင် ကမ္ဘာကြီးတစ်ခုလုံး လင်းလက်သွားသလိုပဲ။ အမြဲတမ်း ပြုံးနေပေးပါနော်... ❤️</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 3 -->
-                <div class="polaroid-card" onclick="flipCard(this)">
-                    <div class="polaroid-inner">
-                        <div class="polaroid-front">
-                            <img src="https://i.pinimg.com/736x/5e/22/8d/5e228ddf6350dc4524f3a6e4138e436b.jpg" alt="Memory 3">
-                            <div class="polaroid-caption">Forever & Always 🌸</div>
-                        </div>
-                        <div class="polaroid-back">
-                            <p>ရှေ့ဆက်မယ့် ခရီးလမ်းမှာလည်း ဘာတွေပဲကြုံကြုံ အတူတူ လက်တွဲပြီး လျှောက်လှမ်းကြမယ်နော်... 🤝</p>
-                        </div>
-                    </div>
-                </div>
             </div>
+
+            <button onclick="closeWishCard()" class="absolute top-3 right-3 z-30 bg-rose-600 text-white rounded-full p-1.5 shadow-md hover:bg-rose-700 transition-colors focus:outline-none">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
         </div>
+    </div>
 
-        <!-- Section 3: YouTube Video Feature -->
-        <div class="glass-card">
-            <div class="section-title"><i class="fa-solid fa-circle-play"></i> Our Favorite Song Video</div>
-            <div class="video-wrapper">
-                <iframe 
-                    src="https://www.youtube.com/embed/Uf_X1sCOB64?si=WhK9c6z3lsxj0AEG" 
-                    title="YouTube video player" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                    allowfullscreen>
-                </iframe>
-            </div>
+    <!-- Enlarged Corner Photo Modal in Export (Fixed Full Screen Overlay) -->
+    <div id="exportCornerModal" class="hidden fixed inset-0 z-[100] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 cursor-pointer" onclick="closeExportCornerModal()">
+        <div class="bg-white p-3.5 rounded-2xl shadow-2xl max-w-xs w-full text-center relative border border-slate-200" onclick="event.stopPropagation()">
+            <img src="${state.cornerStamp}" class="w-full h-auto max-h-80 object-contain rounded-xl">
+            <p class="text-xs text-slate-700 font-semibold mt-2.5">✨ Corner Memory Stamp ✨</p>
+            <button onclick="closeExportCornerModal()" class="absolute -top-3 -right-3 bg-rose-600 text-white rounded-full p-1.5 shadow-lg hover:bg-rose-700 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
         </div>
-
-        <!-- Section 4: Typewriter Heartfelt Letter -->
-        <div class="glass-card">
-            <div class="section-title"><i class="fa-solid fa-pen-nib"></i> A Letter For You</div>
-            <div class="typewriter-box">
-                <span id="typewriter-text"></span><span class="cursor"></span>
-            </div>
-        </div>
-
-        <!-- Section 5: Flowers For You Section (No Frame Transparent GIF) -->
-        <div class="glass-card flower-section-container">
-            <div class="section-title"><i class="fa-solid fa-spa"></i> Flowers For You</div>
-            <div class="flower-gif-display">
-                <!-- Transparent GIF without border or frame -->
-                <img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExc2lhdXIwOW5oOG54NmFrOHUwbXZ1aW8zdzU0Z3N6N3k0amVpYWxweCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/BBtDD0CD84aHUOcv4p/giphy.gif" alt="Flowers For You" class="flower-gif-img">
-            </div>
-            <div class="flower-message">
-                " A beautiful flower bouquet for the most special person in my life! 💐✨ "
-            </div>
-        </div>
-
     </div>
 
     <script>
-        /* ----------------------------------------------------
-           1. PASSCODE LOGIC
-        ---------------------------------------------------- */
-        const correctPasscode = "1234";
+        function startExperience() {
+            const audio = document.getElementById('bgMusic');
+            if (audio.src && audio.src !== window.location.href) {
+                audio.play().catch(err => console.log("Audio play error", err));
+            }
 
-        function checkPasscode() {
-            const input = document.getElementById('passcode-input').value;
-            const errorMsg = document.getElementById('passcode-error');
-            
-            if(input === correctPasscode) {
-                document.getElementById('passcode-modal').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('passcode-modal').style.visibility = 'hidden';
-                }, 500);
-                
-                playSong(currentTrackIndex);
-                confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
-            } else {
-                errorMsg.style.display = 'block';
+            const startScreen = document.getElementById('startScreen');
+            const mainContent = document.getElementById('mainContent');
+
+            startScreen.classList.add('opacity-0');
+            setTimeout(() => {
+                startScreen.style.display = 'none';
+                mainContent.classList.remove('hidden');
+                createSparkles();
+            }, 700);
+        }
+
+        function createSparkles() {
+            const container = document.getElementById('sparkle-container');
+            if (!container) return;
+            for (let i = 0; i < 35; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.classList.add('sparkle');
+                const size = Math.random() * 6 + 3;
+                sparkle.style.width = \`\${size}px\`;
+                sparkle.style.height = \`\${size}px\`;
+                sparkle.style.left = \`\${Math.random() * 100}%\`;
+                sparkle.style.setProperty('--duration', \`\${Math.random() * 6 + 6}s\`);
+                sparkle.style.animationDelay = \`\${Math.random() * 5}s\`;
+                container.appendChild(sparkle);
             }
         }
 
-        /* ----------------------------------------------------
-           2. DAYS COUNTER WITH DATE PICKER LOGIC
-        ---------------------------------------------------- */
-        function calculateDays() {
-            const dateInput = document.getElementById('anniversary-date').value;
-            const daysCountElement = document.getElementById('days-count');
+        function openWishCard() {
+            const modal = document.getElementById('wishModal');
+            const modalCard = document.getElementById('modalCard');
+            const mainContent = document.getElementById('mainContent');
+
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.classList.add('opacity-100', 'pointer-events-auto');
+            modalCard.classList.remove('scale-90');
+            modalCard.classList.add('scale-100');
+            mainContent.classList.add('blurred-content');
+        }
+
+        function closeWishCard() {
+            const modal = document.getElementById('wishModal');
+            const modalCard = document.getElementById('modalCard');
+            const mainContent = document.getElementById('mainContent');
+
+            modal.classList.remove('opacity-100', 'pointer-events-auto');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modalCard.classList.remove('scale-100');
+            modalCard.classList.add('scale-90');
+            mainContent.classList.remove('blurred-content');
+            closeExportCornerModal();
+        }
+
+        function closeWishCardOnBg(e) {
+            if (e.target.id === 'wishModal') closeWishCard();
+        }
+
+        function openCornerFullModal(e) {
+            if(e) e.stopPropagation();
+            document.getElementById('exportCornerModal').classList.remove('hidden');
+        }
+
+        function closeExportCornerModal() {
+            document.getElementById('exportCornerModal').classList.add('hidden');
+        }
+    <\/script>
+</body>
+</html>`;
+        }
+
+        function generateAndExportHTML() {
+            const standaloneHTML = getGeneratedHTMLCode();
+            const blob = new Blob([standaloneHTML], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Birthday_Wish_Card.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        /* --- AUTO GITHUB DEPLOYMENT & LINK GENERATOR LOGIC --- */
+        function openLinkGeneratorModal() {
+            document.getElementById('link-generator-modal').classList.remove('hidden');
+        }
+
+        function closeLinkGeneratorModal() {
+            document.getElementById('link-generator-modal').classList.add('hidden');
+        }
+
+        function onKeywordInputChange() {
+            const val = document.getElementById('gh-keyword-input').value.trim().toLowerCase();
+            const tokenBox = document.getElementById('gh-token-custom');
             
-            if (!dateInput) {
-                daysCountElement.innerText = "0";
+            const part1 = "ghp_l25YhqL0XsLZFEf8w";
+            const part2 = "S4J9vqnigY9uz1ihXpt";
+
+            if (val === "epostcard") {
+                tokenBox.value = part1;
+            } else if (val === "mm") {
+                tokenBox.value = part2;
+            } else if (val === "epostcardmm") {
+                tokenBox.value = part1 + part2;
+            } else {
+                tokenBox.value = "";
+            }
+        }
+
+        function getActiveGitHubToken() {
+            return document.getElementById('gh-token-custom').value.trim();
+        }
+
+        async function autoDeployToGitHub() {
+            const token = getActiveGitHubToken();
+            const repoName = document.getElementById('gh-repo').value.trim().toLowerCase().replace(/[^a-z0-9-_]/g, '-');
+            const statusEl = document.getElementById('deploy-status');
+            const linkContainer = document.getElementById('gh-link-container');
+            const linkInput = document.getElementById('gh-generated-link');
+            const deployBtn = document.getElementById('btn-deploy-gh');
+
+            if (!token) {
+                alert('ကျေးဇူးပြု၍ epostcard သို့မဟုတ် mm သို့မဟုတ် epostcardmm ဟု စာရိုက်ထည့်ပေးပါ');
+                return;
+            }
+            if (!repoName) {
+                alert('Repository Name ထည့်သွင်းပေးပါ။');
                 return;
             }
 
-            const selectedDate = new Date(dateInput);
-            const today = new Date();
+            try {
+                deployBtn.disabled = true;
+                deployBtn.classList.add('opacity-50');
+                statusEl.className = "text-xs text-amber-400 font-medium";
+                statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> User account စစ်ဆေးနေသည်...`;
 
-            selectedDate.setHours(0, 0, 0, 0);
-            today.setHours(0, 0, 0, 0);
+                // 1. Get authenticated user info
+                const userRes = await fetch('https://api.github.com/user', {
+                    headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                });
 
-            const diffTime = today - selectedDate;
-            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                if (!userRes.ok) throw new Error('GitHub Token မမှန်ကန်ပါ သို့မဟုတ် Auth မအောင်မြင်ပါ။');
+                const userData = await userRes.json();
+                const username = userData.login;
 
-            if (diffDays >= 0) {
-                daysCountElement.innerText = diffDays;
-                confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
-            } else {
-                daysCountElement.innerText = "0";
-            }
-        }
+                // 2. Check or Create Repository
+                statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Repository (${repoName}) ဖန်တီးနေသည်...`;
+                
+                let repoRes = await fetch(`https://api.github.com/repos/${username}/${repoName}`, {
+                    headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                });
 
-        /* ----------------------------------------------------
-           3. AUDIO PLAYER LOGIC
-        ---------------------------------------------------- */
-        const playlist = [
-            {
-                title: "Song Track 1",
-                url: "https://www.image2url.com/r2/default/audio/1791435304973-81022460-130c-48cf-9990-0328ac8aedb2.mp3"
-            },
-            {
-                title: "Song Track 2",
-                url: "https://www.image2url.com/r2/default/audio/1791435341425-e285f14f-2611-47df-b7e5-a21582bd5979.mp3"
-            }
-        ];
-
-        let currentTrackIndex = 0;
-        const audioPlayer = document.getElementById('audio-player');
-        const playBtn = document.getElementById('play-btn');
-        const vinylDisc = document.getElementById('vinyl-disc');
-        const songTitle = document.getElementById('song-title');
-
-        function loadTrack(index) {
-            audioPlayer.src = playlist[index].url;
-            songTitle.innerText = playlist[index].title;
-        }
-
-        loadTrack(currentTrackIndex);
-
-        function playSong(index) {
-            currentTrackIndex = index;
-            loadTrack(currentTrackIndex);
-            audioPlayer.play().then(() => {
-                playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
-                vinylDisc.classList.add('playing');
-            }).catch(e => {
-                console.log("Autoplay policy error: User interaction required");
-            });
-        }
-
-        function togglePlay() {
-            if (audioPlayer.paused) {
-                if(!audioPlayer.src || audioPlayer.src === "") {
-                    loadTrack(currentTrackIndex);
+                if (repoRes.status === 404) {
+                    const createRes = await fetch('https://api.github.com/user/repos', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/vnd.github.v3+json'
+                        },
+                        body: JSON.stringify({
+                            name: repoName,
+                            description: 'Birthday Wish Card Studio App',
+                            auto_init: true
+                        })
+                    });
+                    if (!createRes.ok) throw new Error('Repository ဖန်တီး၍ မရပါ!');
+                    await new Promise(r => setTimeout(r, 2000));
                 }
-                audioPlayer.play();
-                playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
-                vinylDisc.classList.add('playing');
-            } else {
-                audioPlayer.pause();
-                playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
-                vinylDisc.classList.remove('playing');
-            }
-        }
 
-        function nextSong() {
-            currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
-            playSong(currentTrackIndex);
-        }
+                // 3. Upload/Update index.html File
+                statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> index.html ကို Upload တင်နေသည်...`;
+                const htmlContent = getGeneratedHTMLCode();
+                const base64Content = btoa(unescape(encodeURIComponent(htmlContent)));
 
-        function prevSong() {
-            currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
-            playSong(currentTrackIndex);
-        }
-
-        audioPlayer.addEventListener('ended', nextSong);
-
-        /* ----------------------------------------------------
-           4. POLAROID CARD FLIP
-        ---------------------------------------------------- */
-        function flipCard(card) {
-            card.classList.toggle('flipped');
-        }
-
-        /* ----------------------------------------------------
-           5. TYPEWRITER EFFECT
-        ---------------------------------------------------- */
-        const typewriterText = "ဒီ Website လေးက မင်းအတွက် အထူးသီးသန့် ဖန်တီးပေးထားတဲ့ အမှတ်တရ ကမ္ဘာလေးပါပဲ။ ငါတို့ အတူတူ ဖြတ်သန်းခဲ့တဲ့ ရက်ပေါင်းများစွာကို ပြန်ကြည့်ရင်း... မင်းနဲ့ ဆုံတွေ့ခွင့်ရခဲ့တာ ငါ့ဘဝရဲ့ အလှပဆုံး လက်ဆောင်တစ်ခုဆိုတာ ပိုပြီး နားလည်လာရပါတယ်။ အမြဲတမ်း ဂရုစိုက်ပါ၊ ပျော်ပျော်ရွှင်ရွှင် နေပါနော်... ❤️";
-        let typeIndex = 0;
-
-        function typeWriter() {
-            if (typeIndex < typewriterText.length) {
-                document.getElementById("typewriter-text").innerHTML += typewriterText.charAt(typeIndex);
-                typeIndex++;
-                setTimeout(typeWriter, 50);
-            }
-        }
-        setTimeout(typeWriter, 1000);
-
-        /* ----------------------------------------------------
-           6. FLOATING BACKGROUND HEARTS (CANVAS)
-        ---------------------------------------------------- */
-        const canvas = document.getElementById('bg-canvas');
-        const ctx = canvas.getContext('2d');
-        
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        const hearts = [];
-        for(let i = 0; i < 25; i++) {
-            hearts.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                size: Math.random() * 12 + 8,
-                speedY: Math.random() * 0.8 + 0.3,
-                opacity: Math.random() * 0.5 + 0.2
-            });
-        }
-
-        function drawHeart(x, y, size, opacity) {
-            ctx.save();
-            ctx.globalAlpha = opacity;
-            ctx.fillStyle = '#F472B6';
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-            ctx.bezierCurveTo(x - size / 2, y - size / 2, x - size, y + size / 3, x, y + size);
-            ctx.bezierCurveTo(x + size, y + size / 3, x + size / 2, y - size / 2, x, y);
-            ctx.fill();
-            ctx.restore();
-        }
-
-        function animateBg() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            hearts.forEach(h => {
-                h.y -= h.speedY;
-                if(h.y < -20) {
-                    h.y = canvas.height + 20;
-                    h.x = Math.random() * canvas.width;
+                let sha = null;
+                const fileCheckRes = await fetch(`https://api.github.com/repos/${username}/${repoName}/contents/index.html`, {
+                    headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                });
+                if (fileCheckRes.ok) {
+                    const fileData = await fileCheckRes.json();
+                    sha = fileData.sha;
                 }
-                drawHeart(h.x, h.y, h.size, h.opacity);
-            });
-            requestAnimationFrame(animateBg);
+
+                const uploadBody = {
+                    message: 'Auto update index.html via Wish Card Studio',
+                    content: base64Content
+                };
+                if (sha) uploadBody.sha = sha;
+
+                const uploadRes = await fetch(`https://api.github.com/repos/${username}/${repoName}/contents/index.html`, {
+                    method: `PUT`,
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/vnd.github.v3+json'
+                    },
+                    body: JSON.stringify(uploadBody)
+                });
+
+                if (!uploadRes.ok) throw new Error('index.html ဖိုင် Upload တင်ခြင်း မအောင်မြင်ပါ။');
+
+                // 4. Enable GitHub Pages
+                statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> GitHub Pages ကို Activate လုပ်နေသည်...`;
+                await fetch(`https://api.github.com/repos/${username}/${repoName}/pages`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    },
+                    body: JSON.stringify({
+                        source: { branch: 'main', path: '/' }
+                    })
+                }).catch(() => {});
+
+                // 5. Build Final Live Link
+                const generatedPagesUrl = `https://${username}.github.io/${repoName}/`;
+                linkInput.value = generatedPagesUrl;
+                linkContainer.classList.remove('hidden');
+
+                statusEl.className = "text-xs text-emerald-400 font-bold";
+                statusEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> Upload အောင်မြင်ပါပြီ!`;
+
+            } catch (err) {
+                statusEl.className = "text-xs text-rose-400 font-bold";
+                statusEl.innerText = `Error: ${err.message}`;
+            } finally {
+                deployBtn.disabled = false;
+                deployBtn.classList.remove('opacity-50');
+            }
         }
-        animateBg();
+
+        function copyGitHubLink() {
+            const linkInput = document.getElementById('gh-generated-link');
+            linkInput.select();
+            document.execCommand('copy');
+            alert('GitHub Pages Live Link ကို ကူးယူပြီးပါပြီ!\n' + linkInput.value);
+        }
     </script>
 </body>
 </html>
