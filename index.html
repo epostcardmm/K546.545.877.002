@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Special Memories & Love Story</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Dancing+Script:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Padauk:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #FAF6F0;
+            --card-bg: rgba(255, 255, 255, 0.75);
+            --primary-pink: #F472B6;
+            --soft-pink: #FBCFE8;
+            --deep-pink: #DB2777;
+            --rose: #FDA4AF;
+            --text-dark: #4A3B43;
+            --text-muted: #8C7A83;
+            --shadow-glass: 0 8px 32px 0 rgba(190, 140, 160, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            font-family: 'Plus Jakarta Sans', 'Padauk', sans-serif;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* Floating Background Particles Canvas */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .content-container {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px 16px 80px 16px;
+        }
+
+        /* Glassmorphism Card Style */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 24px;
+            padding: 28px;
+            margin-bottom: 32px;
+            box-shadow: var(--shadow-glass);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-card:hover {
+            box-shadow: 0 15px 35px 0 rgba(190, 140, 160, 0.2);
+        }
+
+        .section-title {
+            text-align: center;
+            font-family: 'Dancing Script', 'Padauk', cursive;
+            font-size: 2.3rem;
+            color: var(--deep-pink);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* --- PASSCODE ENTRY MODAL --- */
+        #passcode-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(250, 246, 240, 0.92);
+            backdrop-filter: blur(15px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .passcode-box {
+            text-align: center;
+            max-width: 360px;
+            width: 100%;
+        }
+
+        .passcode-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.5rem;
+            color: var(--deep-pink);
+            margin-bottom: 8px;
+        }
+
+        .passcode-input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 16px;
+            border: 2px solid var(--soft-pink);
+            outline: none;
+            text-align: center;
+            font-size: 1.2rem;
+            letter-spacing: 6px;
+            margin: 18px 0;
+            background: white;
+            color: var(--text-dark);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+            transition: border-color 0.3s;
+        }
+
+        .passcode-input:focus {
+            border-color: var(--primary-pink);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-pink), var(--deep-pink));
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(219, 39, 119, 0.3);
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(219, 39, 119, 0.4);
+        }
+
+        /* --- HERO SECTION --- */
+        .hero-header {
+            text-align: center;
+            padding: 40px 10px 20px 10px;
+        }
+
+        .hero-header h1 {
+            font-family: 'Dancing Script', 'Padauk', cursive;
+            font-size: 3.5rem;
+            color: var(--deep-pink);
+            line-height: 1.2;
+            margin-bottom: 10px;
+        }
+
+        .hero-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* --- DAY COUNTER SECTION WITH DATE PICKER --- */
+        .counter-container {
+            text-align: center;
+            padding: 20px 10px;
+        }
+
+        .counter-title {
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .date-picker-wrapper {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .date-picker-label {
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .date-input {
+            padding: 10px 18px;
+            border-radius: 20px;
+            border: 2px solid var(--soft-pink);
+            outline: none;
+            font-family: inherit;
+            font-size: 1rem;
+            color: var(--deep-pink);
+            background: white;
+            box-shadow: 0 4px 12px rgba(244, 114, 182, 0.1);
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .date-input:focus {
+            border-color: var(--deep-pink);
+        }
+
+        .counter-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #FFF0F5, #FCE7F3);
+            border: 2px solid var(--soft-pink);
+            border-radius: 30px;
+            padding: 24px 40px;
+            box-shadow: 0 10px 25px -5px rgba(244, 114, 182, 0.2);
+        }
+
+        .days-number {
+            font-family: 'Caveat', cursive;
+            font-size: 5rem;
+            font-weight: 700;
+            color: var(--deep-pink);
+            line-height: 1;
+            display: block;
+        }
+
+        .days-label {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-top: 5px;
+        }
+
+        /* --- MUSIC PLAYER --- */
+        .music-player {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 16px 24px;
+            border-radius: 60px;
+            box-shadow: var(--shadow-glass);
+            border: 1px solid var(--soft-pink);
+            margin-bottom: 32px;
+        }
+
+        .vinyl-container {
+            width: 55px;
+            height: 55px;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .vinyl-disc {
+            width: 100%;
+            height: 100%;
+            background: #111;
+            border-radius: 50%;
+            border: 3px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            animation: spin 6s linear infinite;
+            animation-play-state: paused;
+        }
+
+        .vinyl-disc.playing {
+            animation-play-state: running;
+        }
+
+        .vinyl-center {
+            width: 20px;
+            height: 20px;
+            background: var(--primary-pink);
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        .song-info {
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        .song-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .song-artist {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .player-btn {
+            background: none;
+            border: none;
+            color: var(--deep-pink);
+            font-size: 1.2rem;
+            cursor: pointer;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .player-btn:hover {
+            background: var(--soft-pink);
+        }
+
+        .play-main-btn {
+            background: var(--primary-pink);
+            color: white;
+            font-size: 1.1rem;
+        }
+
+        .play-main-btn:hover {
+            background: var(--deep-pink);
+        }
+
+        /* --- POLAROID GALLERY --- */
+        .polaroid-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px;
+            margin-top: 10px;
+        }
+
+        .polaroid-card {
+            background: white;
+            padding: 12px 12px 24px 12px;
+            border-radius: 8px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            cursor: pointer;
+            perspective: 1000px;
+            height: 280px;
+            position: relative;
+            transition: transform 0.4s ease;
+        }
+
+        .polaroid-card:nth-child(odd) { transform: rotate(-3deg); }
+        .polaroid-card:nth-child(even) { transform: rotate(3deg); }
+
+        .polaroid-card:hover {
+            transform: translateY(-8px) scale(1.02) rotate(0deg) !important;
+            z-index: 5;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.12);
+        }
+
+        .polaroid-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .polaroid-card.flipped .polaroid-inner {
+            transform: rotateY(180deg);
+        }
+
+        .polaroid-front, .polaroid-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .polaroid-front img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .polaroid-caption {
+            font-family: 'Caveat', cursive;
+            font-size: 1.3rem;
+            color: #555;
+            margin-top: 10px;
+        }
+
+        .polaroid-back {
+            background: #FFF9FA;
+            border: 1px dashed var(--soft-pink);
+            transform: rotateY(180deg);
+            padding: 16px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .polaroid-back p {
+            font-family: 'Padauk', sans-serif;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* --- YOUTUBE EMBED SECTION --- */
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* --- TYPEWRITER MESSAGE BOX --- */
+        .typewriter-box {
+            background: #FFF9FA;
+            border-radius: 16px;
+            padding: 24px;
+            border-left: 4px solid var(--primary-pink);
+            min-height: 140px;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: #333;
+            font-family: 'Padauk', sans-serif;
+            position: relative;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background-color: var(--deep-pink);
+            vertical-align: middle;
+            animation: blink 0.8s infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        /* --- NO-FRAME TRANSPARENT FLOWER GIF SECTION --- */
+        .flower-section-container {
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .flower-gif-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 10px 0 20px 0;
+        }
+
+        .flower-gif-img {
+            max-width: 280px;
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0px 10px 15px rgba(244, 114, 182, 0.25));
+            animation: floatGently 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatGently {
+            0% { transform: translateY(0px) scale(1); }
+            100% { transform: translateY(-10px) scale(1.02); }
+        }
+
+        .flower-message {
+            font-family: 'Dancing Script', 'Padauk', cursive;
+            font-size: 1.6rem;
+            color: var(--deep-pink);
+            margin-top: 10px;
+            line-height: 1.4;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 600px) {
+            .hero-header h1 { font-size: 2.5rem; }
+            .days-number { font-size: 4rem; }
+            .counter-badge { padding: 18px 28px; }
+            .section-title { font-size: 1.8rem; }
+            .music-player { padding: 12px 18px; }
+            .flower-gif-img { max-width: 220px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Animation Canvas -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Passcode Modal Lock -->
+    <div id="passcode-modal">
+        <div class="passcode-box glass-card">
+            <div class="passcode-title">Secret Passcode</div>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Enter the special date or code to unlock our page ✨</p>
+            <p style="font-size: 0.8rem; color: #999; margin-top: 4px;">(Default Passcode: <b>1234</b>)</p>
+            <input type="password" id="passcode-input" class="passcode-input" placeholder="••••" maxlength="6">
+            <button class="btn-primary" onclick="checkPasscode()">Unlock Memories 💕</button>
+            <div id="passcode-error" style="color: red; font-size: 0.85rem; margin-top: 10px; display: none;">Wrong secret code! Try again.</div>
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
+    <div class="content-container">
+
+        <!-- Music Player Floating/Top -->
+        <div class="music-player">
+            <div class="vinyl-container">
+                <div class="vinyl-disc" id="vinyl-disc">
+                    <div class="vinyl-center"></div>
+                </div>
+            </div>
+            <div class="song-info">
+                <div class="song-title" id="song-title">Song Track 1</div>
+                <div class="song-artist">Special Songs For You ❤️</div>
+            </div>
+            <div class="player-controls">
+                <button class="player-btn" onclick="prevSong()" title="Previous Track"><i class="fa-solid fa-backward-step"></i></button>
+                <button class="player-btn play-main-btn" onclick="togglePlay()" id="play-btn" title="Play/Pause"><i class="fa-solid fa-play"></i></button>
+                <button class="player-btn" onclick="nextSong()" title="Next Track"><i class="fa-solid fa-forward-step"></i></button>
+            </div>
+            <!-- Audio Element -->
+            <audio id="audio-player"></audio>
+        </div>
+
+        <!-- Hero Header -->
+        <div class="hero-header">
+            <h1>Our Love & Memory Story</h1>
+            <p>Every single second with you is a precious blessing ✨</p>
+        </div>
+
+        <!-- Section 1: Day Counter with Date Picker -->
+        <div class="glass-card counter-container">
+            <div class="counter-title"><i class="fa-solid fa-heart" style="color: var(--deep-pink);"></i> We've Been Together For <i class="fa-solid fa-heart" style="color: var(--deep-pink);"></i></div>
+            
+            <div class="date-picker-wrapper">
+                <label for="anniversary-date" class="date-picker-label">📅 အမှတ်တရနေ့စွဲလေး ရွေးပေးပါနော် -</label>
+                <input type="date" id="anniversary-date" class="date-input" onchange="calculateDays()">
+            </div>
+
+            <div class="counter-badge">
+                <span class="days-number" id="days-count">0</span>
+                <span class="days-label">DAYS</span>
+            </div>
+        </div>
+
+        <!-- Section 2: Polaroid Photo Gallery -->
+        <div class="glass-card">
+            <div class="section-title"><i class="fa-solid fa-camera-retro"></i> Our Sweet Moments</div>
+            <p style="text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
+                (Click or tap on any picture to flip and read the secret note)
+            </p>
+            <div class="polaroid-grid">
+                <!-- Card 1 -->
+                <div class="polaroid-card" onclick="flipCard(this)">
+                    <div class="polaroid-inner">
+                        <div class="polaroid-front">
+                            <img src="https://i.pinimg.com/736x/77/52/4a/77524a09b7b8a7d09b54ab18c52d6816.jpg" alt="Memory 1">
+                            <div class="polaroid-caption">Memory ✨</div>
+                        </div>
+                        <div class="polaroid-back">
+                            <p>ဒီနေ့လည်းအများကြီး ချစ်တယ်နော်.. 💭</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="polaroid-card" onclick="flipCard(this)">
+                    <div class="polaroid-inner">
+                        <div class="polaroid-front">
+                            <img src="https://i.pinimg.com/1200x/86/2d/f2/862df26ffb3eadbcc804419ef398cfcb.jpg" alt="Memory 2">
+                            <div class="polaroid-caption">Sweet Smile 😊</div>
+                        </div>
+                        <div class="polaroid-back">
+                            <p>နင်ပြုံးလိုက်ရင် ကမ္ဘာကြီးတစ်ခုလုံး လင်းလက်သွားသလိုပဲ။ အမြဲတမ်း ပြုံးနေပေးပါနော်... ❤️</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="polaroid-card" onclick="flipCard(this)">
+                    <div class="polaroid-inner">
+                        <div class="polaroid-front">
+                            <img src="https://i.pinimg.com/736x/5e/22/8d/5e228ddf6350dc4524f3a6e4138e436b.jpg" alt="Memory 3">
+                            <div class="polaroid-caption">Forever & Always 🌸</div>
+                        </div>
+                        <div class="polaroid-back">
+                            <p>ရှေ့ဆက်မယ့် ခရီးလမ်းမှာလည်း ဘာတွေပဲကြုံကြုံ အတူတူ လက်တွဲပြီး လျှောက်လှမ်းကြမယ်နော်... 🤝</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: YouTube Video Feature -->
+        <div class="glass-card">
+            <div class="section-title"><i class="fa-solid fa-circle-play"></i> Our Favorite Song Video</div>
+            <div class="video-wrapper">
+                <iframe 
+                    src="https://www.youtube.com/embed/Uf_X1sCOB64?si=WhK9c6z3lsxj0AEG" 
+                    title="YouTube video player" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                    allowfullscreen>
+                </iframe>
+            </div>
+        </div>
+
+        <!-- Section 4: Typewriter Heartfelt Letter -->
+        <div class="glass-card">
+            <div class="section-title"><i class="fa-solid fa-pen-nib"></i> A Letter For You</div>
+            <div class="typewriter-box">
+                <span id="typewriter-text"></span><span class="cursor"></span>
+            </div>
+        </div>
+
+        <!-- Section 5: Flowers For You Section (No Frame Transparent GIF) -->
+        <div class="glass-card flower-section-container">
+            <div class="section-title"><i class="fa-solid fa-spa"></i> Flowers For You</div>
+            <div class="flower-gif-display">
+                <!-- Transparent GIF without border or frame -->
+                <img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExc2lhdXIwOW5oOG54NmFrOHUwbXZ1aW8zdzU0Z3N6N3k0amVpYWxweCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/BBtDD0CD84aHUOcv4p/giphy.gif" alt="Flowers For You" class="flower-gif-img">
+            </div>
+            <div class="flower-message">
+                " A beautiful flower bouquet for the most special person in my life! 💐✨ "
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        /* ----------------------------------------------------
+           1. PASSCODE LOGIC
+        ---------------------------------------------------- */
+        const correctPasscode = "1234";
+
+        function checkPasscode() {
+            const input = document.getElementById('passcode-input').value;
+            const errorMsg = document.getElementById('passcode-error');
+            
+            if(input === correctPasscode) {
+                document.getElementById('passcode-modal').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('passcode-modal').style.visibility = 'hidden';
+                }, 500);
+                
+                playSong(currentTrackIndex);
+                confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+            } else {
+                errorMsg.style.display = 'block';
+            }
+        }
+
+        /* ----------------------------------------------------
+           2. DAYS COUNTER WITH DATE PICKER LOGIC
+        ---------------------------------------------------- */
+        function calculateDays() {
+            const dateInput = document.getElementById('anniversary-date').value;
+            const daysCountElement = document.getElementById('days-count');
+            
+            if (!dateInput) {
+                daysCountElement.innerText = "0";
+                return;
+            }
+
+            const selectedDate = new Date(dateInput);
+            const today = new Date();
+
+            selectedDate.setHours(0, 0, 0, 0);
+            today.setHours(0, 0, 0, 0);
+
+            const diffTime = today - selectedDate;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays >= 0) {
+                daysCountElement.innerText = diffDays;
+                confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+            } else {
+                daysCountElement.innerText = "0";
+            }
+        }
+
+        /* ----------------------------------------------------
+           3. AUDIO PLAYER LOGIC
+        ---------------------------------------------------- */
+        const playlist = [
+            {
+                title: "Song Track 1",
+                url: "https://www.image2url.com/r2/default/audio/1791435304973-81022460-130c-48cf-9990-0328ac8aedb2.mp3"
+            },
+            {
+                title: "Song Track 2",
+                url: "https://www.image2url.com/r2/default/audio/1791435341425-e285f14f-2611-47df-b7e5-a21582bd5979.mp3"
+            }
+        ];
+
+        let currentTrackIndex = 0;
+        const audioPlayer = document.getElementById('audio-player');
+        const playBtn = document.getElementById('play-btn');
+        const vinylDisc = document.getElementById('vinyl-disc');
+        const songTitle = document.getElementById('song-title');
+
+        function loadTrack(index) {
+            audioPlayer.src = playlist[index].url;
+            songTitle.innerText = playlist[index].title;
+        }
+
+        loadTrack(currentTrackIndex);
+
+        function playSong(index) {
+            currentTrackIndex = index;
+            loadTrack(currentTrackIndex);
+            audioPlayer.play().then(() => {
+                playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+                vinylDisc.classList.add('playing');
+            }).catch(e => {
+                console.log("Autoplay policy error: User interaction required");
+            });
+        }
+
+        function togglePlay() {
+            if (audioPlayer.paused) {
+                if(!audioPlayer.src || audioPlayer.src === "") {
+                    loadTrack(currentTrackIndex);
+                }
+                audioPlayer.play();
+                playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+                vinylDisc.classList.add('playing');
+            } else {
+                audioPlayer.pause();
+                playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+                vinylDisc.classList.remove('playing');
+            }
+        }
+
+        function nextSong() {
+            currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+            playSong(currentTrackIndex);
+        }
+
+        function prevSong() {
+            currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
+            playSong(currentTrackIndex);
+        }
+
+        audioPlayer.addEventListener('ended', nextSong);
+
+        /* ----------------------------------------------------
+           4. POLAROID CARD FLIP
+        ---------------------------------------------------- */
+        function flipCard(card) {
+            card.classList.toggle('flipped');
+        }
+
+        /* ----------------------------------------------------
+           5. TYPEWRITER EFFECT
+        ---------------------------------------------------- */
+        const typewriterText = "ဒီ Website လေးက မင်းအတွက် အထူးသီးသန့် ဖန်တီးပေးထားတဲ့ အမှတ်တရ ကမ္ဘာလေးပါပဲ။ ငါတို့ အတူတူ ဖြတ်သန်းခဲ့တဲ့ ရက်ပေါင်းများစွာကို ပြန်ကြည့်ရင်း... မင်းနဲ့ ဆုံတွေ့ခွင့်ရခဲ့တာ ငါ့ဘဝရဲ့ အလှပဆုံး လက်ဆောင်တစ်ခုဆိုတာ ပိုပြီး နားလည်လာရပါတယ်။ အမြဲတမ်း ဂရုစိုက်ပါ၊ ပျော်ပျော်ရွှင်ရွှင် နေပါနော်... ❤️";
+        let typeIndex = 0;
+
+        function typeWriter() {
+            if (typeIndex < typewriterText.length) {
+                document.getElementById("typewriter-text").innerHTML += typewriterText.charAt(typeIndex);
+                typeIndex++;
+                setTimeout(typeWriter, 50);
+            }
+        }
+        setTimeout(typeWriter, 1000);
+
+        /* ----------------------------------------------------
+           6. FLOATING BACKGROUND HEARTS (CANVAS)
+        ---------------------------------------------------- */
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const hearts = [];
+        for(let i = 0; i < 25; i++) {
+            hearts.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 12 + 8,
+                speedY: Math.random() * 0.8 + 0.3,
+                opacity: Math.random() * 0.5 + 0.2
+            });
+        }
+
+        function drawHeart(x, y, size, opacity) {
+            ctx.save();
+            ctx.globalAlpha = opacity;
+            ctx.fillStyle = '#F472B6';
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.bezierCurveTo(x - size / 2, y - size / 2, x - size, y + size / 3, x, y + size);
+            ctx.bezierCurveTo(x + size, y + size / 3, x + size / 2, y - size / 2, x, y);
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function animateBg() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            hearts.forEach(h => {
+                h.y -= h.speedY;
+                if(h.y < -20) {
+                    h.y = canvas.height + 20;
+                    h.x = Math.random() * canvas.width;
+                }
+                drawHeart(h.x, h.y, h.size, h.opacity);
+            });
+            requestAnimationFrame(animateBg);
+        }
+        animateBg();
+    </script>
+</body>
+</html>
